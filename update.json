@@ -1,10 +1,10 @@
 {
   "homepage": "https://github.com/Aonodensetsu/starminer-1.16/releases",
-  "1.17.1": {
+  "1.16.5": {
     "1.0.0": "Created empty mod"
   },
   "promos": {
-    "1.17.1-latest": "1.0.0",
-    "1.17.1-recommended": "1.0.0"
+    "1.16.5-latest": "1.0.0",
+    "1.16.5-recommended": "1.0.0"
   }
 }
