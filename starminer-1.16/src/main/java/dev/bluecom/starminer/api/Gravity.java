@@ -3,6 +3,7 @@ package dev.bluecom.starminer.api;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraftforge.common.util.LazyOptional;
 
 public abstract class Gravity {
   public static final String EXTENDED_PROP_GRAVITY_KEY = "starminer.Gravity";
@@ -15,23 +16,24 @@ public abstract class Gravity {
   public int attractUpdateTickCount = 0;
   public int acceptExceptionalGravityTick = 0;
 
-  // public static Gravity getGravityProp(Entity entity) {
-    // return (Gravity)entity.getExtendedProperties("starminer.Gravity");
-  // }
+  public static GravityCapability getGravityProp(Entity entity) {
+    LazyOptional<IGravityCapability> gravity = entity.getCapability(GravityProvider.GRAVITY);
+    return (GravityCapability) gravity.orElse(new GravityCapability());
+  }
 
-  // public static final GravityDirection getGravityDirection(Entity entity) {
-  //  Gravity gp = getGravityProp(entity);
-  //  if (gp == null) return GravityDirection.upTOdown_YN; 
-  //  return gp.gravityDirection;
-  // }
+  public static final GravityDirection getGravityDirection(Entity entity) {
+    GravityCapability gp = getGravityProp(entity);
+    if (gp == null) return GravityDirection.upTOdown_YN; 
+    return gp.getGravity();
+  }
 
-  // public static boolean isEntityZeroGravity(Entity entity) {
-  //  if (entity != null) {
-  //    Gravity gp = getGravityProp(entity);
-  //    return (gp != null && gp.isZeroGravity());
-  //  } 
-  //  return false;
-  //}
+  public static boolean isEntityZeroGravity(Entity entity) {
+    if (entity != null) {
+      GravityCapability gp = getGravityProp(entity);
+      return (gp != null && gp.isZeroGravity(null));
+    } 
+    return false;
+  }
   
   public abstract boolean isZeroGravity();
   public abstract boolean isAttracted();

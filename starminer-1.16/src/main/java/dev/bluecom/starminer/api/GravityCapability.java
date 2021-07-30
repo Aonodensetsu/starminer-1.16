@@ -1,5 +1,7 @@
 package dev.bluecom.starminer.api;
 
+import java.util.Optional;
+
 // import java.io.BufferedInputStream;
 // import java.io.BufferedOutputStream;
 // import java.io.ByteArrayInputStream;
@@ -14,6 +16,7 @@ package dev.bluecom.starminer.api;
 
 public class GravityCapability implements IGravityCapability {
   private GravityDirection gravity = GravityDirection.upTOdown_YN;
+  private boolean zero = false;
   @Override
   public GravityDirection getGravity() {
     return this.gravity;
@@ -22,6 +25,14 @@ public class GravityCapability implements IGravityCapability {
   public void setGravity(GravityDirection grav) {
     this.gravity = grav;
   }
+  @Override
+  public boolean isZeroGravity(Optional<Boolean> set) {
+	if (set.isPresent()) {
+      zero = set.get();
+	}
+	return zero;
+  }
+  
 // @Override
 // public ByteArrayNBT storeTable() throws IOException {
 // 	ByteArrayOutputStream output = new ByteArrayOutputStream();
