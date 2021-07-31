@@ -1,15 +1,9 @@
 package dev.bluecom.starminer.api;
 
-import java.util.Optional;
-
-// import java.io.IOException;
-// import net.minecraft.nbt.ByteArrayNBT;
-// import net.minecraft.nbt.INBT;
+import javax.annotation.Nullable;
 
 public interface IGravityCapability {
-  public GravityDirection getGravity();
-  public void setGravity(GravityDirection gravity);
-  public boolean isZeroGravity(Optional<Boolean> set);
-  // public ByteArrayNBT storeTable() throws IOException;
-  // public void restoreTable(INBT nbt) throws IOException, ClassNotFoundException;
+  public GravityDirection getGravityDir();
+  public boolean getGravityZero();
+  public void setGravity(@Nullable GravityDirection gravity, Boolean zr);
 }

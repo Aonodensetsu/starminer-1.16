@@ -2,14 +2,9 @@ package dev.bluecom.starminer.basics;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import dev.bluecom.starminer.api.GravityCapability;
-import dev.bluecom.starminer.api.GravityStorage;
-import dev.bluecom.starminer.api.IGravityCapability;
+import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.basics.common.CommonForgeEventHandler;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -30,9 +25,10 @@ public class SMModContainer {
   public SMModContainer() {
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
   }
+  
   private void setup(final FMLCommonSetupEvent event) {
-	  LOGGER.info("Registering the Event Handlers");
-	  MinecraftForge.EVENT_BUS.register(new CommonForgeEventHandler());
-	  CapabilityManager.INSTANCE.register(IGravityCapability.class, new GravityStorage(), GravityCapability::new);
+    LOGGER.info("Registering the Event Handlers");
+    MinecraftForge.EVENT_BUS.register(new CommonForgeEventHandler());
+    GravityProvider.register();
   }
 }

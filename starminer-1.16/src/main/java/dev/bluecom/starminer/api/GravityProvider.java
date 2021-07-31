@@ -1,35 +1,39 @@
 package dev.bluecom.starminer.api;
 
-import net.minecraft.nbt.INBT;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class GravityProvider implements ICapabilitySerializable<INBT> {
+public class GravityProvider implements ICapabilitySerializable<CompoundNBT> {
+	
   @CapabilityInject(IGravityCapability.class)
-  public final static Capability<IGravityCapability> GRAVITY = null;
+  public static final Capability<IGravityCapability> GRAVITY = null;
   
-  private static final LazyOptional<IGravityCapability> holder = LazyOptional.of(GravityCapability::new);
-  private IGravityCapability instance = GRAVITY.getDefaultInstance();
+  private LazyOptional<IGravityCapability> instance = LazyOptional.of(GRAVITY::getDefaultInstance);
   
-  public <T> boolean hasCapability(Capability<T> capability, Direction side) {
-    return capability == GRAVITY;
+  public static void register() {
+	  CapabilityManager.INSTANCE.register(IGravityCapability.class, new GravityStorage(), GravityCapability::new);
   }
   
+  @Nonnull
   @Override
-  public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side) {
-    return capability == GRAVITY ? holder.cast() : LazyOptional.empty();
-  }
-
-  @Override
-  public INBT serializeNBT() {
-    return GRAVITY.getStorage().writeNBT(GRAVITY, this.instance, null);
+  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction side) {
+    return GRAVITY.orEmpty(capability, instance);
   }
 
   @Override
-  public void deserializeNBT(INBT nbt) {
-    GRAVITY.getStorage().readNBT(GRAVITY, this.instance, null, nbt);
+  public CompoundNBT serializeNBT() {
+    return (CompoundNBT) GRAVITY.getStorage().writeNBT(GRAVITY, instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null);
+  }
+
+  @Override
+  public void deserializeNBT(CompoundNBT nbt) {
+    GRAVITY.getStorage().readNBT(GRAVITY, instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null, nbt);
   }
 }

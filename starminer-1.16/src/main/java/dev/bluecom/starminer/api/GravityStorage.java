@@ -1,17 +1,19 @@
 package dev.bluecom.starminer.api;
 
-// import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-// import net.minecraftforge.common.capabilities.Capability.IStorage;
 
 public class GravityStorage implements Capability.IStorage<IGravityCapability> {
+  @Nullable
   @Override
   public INBT writeNBT(Capability<IGravityCapability> capability, IGravityCapability instance, Direction side) {
-    String dir;
-    switch (instance.getGravity()) {
+    String dir = null;
+    GravityDirection gv = instance.getGravityDir();
+    boolean zr = instance.getGravityZero();
+    switch (gv) {
       case downTOup_YP:
         dir = "YP";
       case eastTOwest_XN:
@@ -29,18 +31,13 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
     };
     CompoundNBT stri = new CompoundNBT();
     stri.putString("dir", dir);
+    stri.putBoolean("zero", zr);
     return stri;
-    // try {
-      // return instance.storeTable();
-      // } catch (IOException e) {
-      // e.printStackTrace();
-      // return null;
-    // }
   }
   @Override
   public void readNBT(Capability<IGravityCapability> capability, IGravityCapability instance, Direction side, INBT nbt) {
-    GravityDirection dir;
     CompoundNBT nbt2 = (CompoundNBT) nbt;
+    GravityDirection dir = null;
     switch (nbt2.getString("dir")) {
       case "YP":
         dir = GravityDirection.downTOup_YP;
@@ -54,14 +51,8 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
         dir = GravityDirection.upTOdown_YN;
       case "XP":
         dir = GravityDirection.westTOeast_XP;
-      default:
-        dir = GravityDirection.upTOdown_YN;
     };
-    instance.setGravity(dir);
-    // try {
-      // instance.restoreTable(nbt);
-      // } catch (IOException | ClassNotFoundException e) {
-      // e.printStackTrace();
-    // }
+   boolean zr = nbt2.getBoolean("zero");
+    instance.setGravity(dir, zr);
   }
 }

@@ -24,13 +24,13 @@ public abstract class Gravity {
   public static final GravityDirection getGravityDirection(Entity entity) {
     GravityCapability gp = getGravityProp(entity);
     if (gp == null) return GravityDirection.upTOdown_YN; 
-    return gp.getGravity();
+    return gp.getGravityDir();
   }
 
   public static boolean isEntityZeroGravity(Entity entity) {
     if (entity != null) {
       GravityCapability gp = getGravityProp(entity);
-      return (gp != null && gp.isZeroGravity(null));
+      return (gp != null && gp.getGravityZero());
     } 
     return false;
   }
