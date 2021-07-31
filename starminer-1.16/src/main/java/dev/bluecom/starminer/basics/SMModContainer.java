@@ -4,10 +4,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.basics.common.CommonForgeEventHandler;
+import dev.bluecom.starminer.basics.item.ItemGravityController;
 import dev.bluecom.starminer.basics.item.RegistryHandler;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -26,12 +30,23 @@ public class SMModContainer {
 	public SMModContainer() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(this::setup);
+		bus.addListener(this::postcomms);
 		RegistryHandler.init(bus);
 	}
-	
 	private void setup(final FMLCommonSetupEvent event) {
 		LOGGER.info("Registering the Event Handlers");
 		MinecraftForge.EVENT_BUS.register(new CommonForgeEventHandler());
 		GravityProvider.init();
+	}
+
+	private void postcomms(FMLClientSetupEvent event) {
+		event.enqueueWork(() -> ItemModelsProperties.register(
+			RegistryHandler.GRAVITYCONTROLLER.get(),
+			new ResourceLocation(SMModContainer.MODID, "gravitystate"),
+			(stack, world, living) -> { 
+				ItemGravityController item = (ItemGravityController) stack.getItem();
+				return item.getGrav(); 
+			}
+		));
 	}
 }

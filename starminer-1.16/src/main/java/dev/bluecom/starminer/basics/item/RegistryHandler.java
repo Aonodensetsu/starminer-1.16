@@ -13,7 +13,7 @@ public class RegistryHandler {
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SMModContainer.MODID);
 	
 	public static final RegistryObject<Item> GRAVITYCONTROLLER = ITEMS.register("gravitycontroller",
-		() -> new Item(new Item.Properties().tab(StarminerTab.STARMINER)));
+		() -> new ItemGravityController(new Item.Properties().tab(StarminerTab.STARMINER)));
 	
 	public static void init(IEventBus bus) {
 		ITEMS.register(bus);

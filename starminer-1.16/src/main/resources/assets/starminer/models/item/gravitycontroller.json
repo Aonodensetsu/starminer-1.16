@@ -1,0 +1,15 @@
+{
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "starminer:item/gravitycontrollerdown"
+	},
+	"overrides": [
+		{
+			"__comment": "when inverted gravity",
+			"predicate": {
+				"starminer:gravitystate": 0.5
+			},
+			"model": "starminer:item/gravitycontrollerup"	
+		}
+	]
+}
