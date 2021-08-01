@@ -55,20 +55,21 @@ public enum GravityDirection {
 
 	public static GravityDirection turnWayForNormal(GravityDirection gDir) {
 		switch (gDir) {
-		case downTOup_YP:
-			return downTOup_YP;
-		case eastTOwest_XN:
-			return westTOeast_XP;
-		case westTOeast_XP:
-			return eastTOwest_XN;
-		case northTOsouth_ZP:
-			return southTOnorth_ZN;
-		case southTOnorth_ZN:
-			return northTOsouth_ZP;
-		case upTOdown_YN:
-			return upTOdown_YN;
+			case downTOup_YP:
+				return downTOup_YP;
+			case eastTOwest_XN:
+				return westTOeast_XP;
+			case westTOeast_XP:
+				return eastTOwest_XN;
+			case northTOsouth_ZP:
+				return southTOnorth_ZN;
+			case southTOnorth_ZN:
+				return northTOsouth_ZP;
+			case upTOdown_YN:
+				return upTOdown_YN;
+			default:
+				return upTOdown_YN;
 		} 
-	return upTOdown_YN;
 	}
 
 	public Vector3d rotateVec3(Vector3d vec3) {

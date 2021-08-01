@@ -15,15 +15,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class CommonForgeEventHandler {
 	@SubscribeEvent
 	public void onPlayerLogsIn(PlayerLoggedInEvent event) {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {}
 		PlayerEntity player = event.getPlayer();
 		LazyOptional<IGravityCapability> gravity = player.getCapability(GravityProvider.GRAVITY, null);
-		IGravityCapability gravity2 = gravity.orElse(null);
-		if (gravity2 != null) {
-			player.sendMessage(new StringTextComponent("DEBUG: Your gravity is " + (gravity2.getGravityDir())), null);
-		}
+		IGravityCapability gravity2 = gravity.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"));
+		player.sendMessage(new StringTextComponent("DEBUG: Your gravity is " + (gravity2.getGravityDir())), null);
 	}
 	
 	@SubscribeEvent

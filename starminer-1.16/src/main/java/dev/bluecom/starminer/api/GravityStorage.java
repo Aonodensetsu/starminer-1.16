@@ -10,49 +10,65 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
 	@Nullable
 	@Override
 	public INBT writeNBT(Capability<IGravityCapability> capability, IGravityCapability instance, Direction side) {
+		GravityDirection grav = instance.getGravityDir();
 		String dir = null;
-		GravityDirection gv = instance.getGravityDir();
-		boolean zr = instance.getGravityZero();
-		switch (gv) {
+		switch (grav) {
 			case downTOup_YP:
 				dir = "YP";
+				break;
 			case eastTOwest_XN:
 				dir = "XN";
+				break;
 			case northTOsouth_ZP:
 				dir = "ZP";
+				break;
 			case southTOnorth_ZN:
 				dir = "ZN";
+				break;
 			case upTOdown_YN:
 				dir = "YN";
+				break;
 			case westTOeast_XP:
 				dir = "XP";
+				break;
 			default:
 				dir = "YN";
+				break;
 		};
 		CompoundNBT stri = new CompoundNBT();
-		stri.putString("dir", dir);
-		stri.putBoolean("zero", zr);
+		stri.putString("gravity", dir);
+		stri.putBoolean("zero", instance.getGravityZero());
+		stri.putBoolean("inverted", instance.getGravityInverted());
 		return stri;
 	}
+	
 	@Override
 	public void readNBT(Capability<IGravityCapability> capability, IGravityCapability instance, Direction side, INBT nbt) {
 		CompoundNBT nbt2 = (CompoundNBT) nbt;
-		GravityDirection dir = null;
-		switch (nbt2.getString("dir")) {
+		GravityDirection grav;
+		switch (nbt2.getString("gravity")) {
 			case "YP":
-				dir = GravityDirection.downTOup_YP;
+				grav = GravityDirection.downTOup_YP;
+				break;
 			case "XN":
-				dir = GravityDirection.eastTOwest_XN;
+				grav = GravityDirection.eastTOwest_XN;
+				break;
 			case "ZP":
-				dir = GravityDirection.northTOsouth_ZP;
+				grav = GravityDirection.northTOsouth_ZP;
+				break;
 			case "ZN":
-				dir = GravityDirection.southTOnorth_ZN;
+				grav = GravityDirection.southTOnorth_ZN;
+				break;
 			case "YN":
-				dir = GravityDirection.upTOdown_YN;
+				grav = GravityDirection.upTOdown_YN;
+				break;
 			case "XP":
-				dir = GravityDirection.westTOeast_XP;
+				grav = GravityDirection.westTOeast_XP;
+				break;
+			default:
+				grav = GravityDirection.upTOdown_YN;
+				break;
 		};
-		boolean zr = nbt2.getBoolean("zero");
-		instance.setGravity(dir, zr);
+		instance.setGravity(grav, nbt2.getBoolean("zero"), nbt2.getBoolean("inverted"));
 	}
 }

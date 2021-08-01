@@ -5,11 +5,8 @@
 	},
 	"overrides": [
 		{
-			"__comment": "when inverted gravity",
-			"predicate": {
-				"starminer:gravitystate": 0.5
-			},
-			"model": "starminer:item/gravitycontrollerup"	
+			"predicate": { "starminer:gravitystate": 0.5 },
+			"model": "starminer:item/override/gravitycontroller"	
 		}
 	]
 }

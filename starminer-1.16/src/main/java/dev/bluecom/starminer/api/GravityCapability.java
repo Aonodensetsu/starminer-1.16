@@ -1,10 +1,9 @@
 package dev.bluecom.starminer.api;
 
-import javax.annotation.Nullable;
-
 public class GravityCapability implements IGravityCapability {
 	private GravityDirection gravity = GravityDirection.upTOdown_YN;
-	private boolean zeroG = false;
+	private boolean zero = false;
+	private boolean inverted = false;
 	
 	@Override
 	public GravityDirection getGravityDir() {
@@ -13,16 +12,24 @@ public class GravityCapability implements IGravityCapability {
 	
 	@Override
 	public boolean getGravityZero() {
-		return this.zeroG;
+		return this.zero;
 	}
 	
 	@Override
-	public void setGravity(@Nullable GravityDirection grav, Boolean zr) {
+	public boolean getGravityInverted() {
+		return this.inverted;
+	}
+	
+	@Override
+	public void setGravity(GravityDirection grav, Boolean zer, Boolean inv) {
 		if (grav != null) {
 			this.gravity = grav;
 		}
-		if (zr != null) {
-			this.zeroG = zr;
+		if (zer != null) {
+			this.zero = zer;
+		}
+		if (inv != null) {
+			this.inverted = inv;
 		}
 	}
 }
