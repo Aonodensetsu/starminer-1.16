@@ -1,4 +1,6 @@
 {
-	"item.starminer.gravitycontroller": "Gravity Controller",
+	"item.starminer.gravity_controller": "Gravity Controller",
+	"block.starminer.inner_core": "Inner Core",
+	"block.starminer.outer_core": "Outer Core",
 	"itemGroup.starminer": "Starminer"
 }

@@ -1,12 +1,12 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "starminer:item/gravitycontrollerdown"
+		"layer0": "starminer:item/gravity_controller_down"
 	},
 	"overrides": [
 		{
 			"predicate": { "starminer:gravitystate": 0.5 },
-			"model": "starminer:item/override/gravitycontroller"	
+			"model": "starminer:item/override/gravity_controller"	
 		}
 	]
 }
