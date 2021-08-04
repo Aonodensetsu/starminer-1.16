@@ -1,6 +1,9 @@
 {
 	"item.starminer.gravity_controller": "Gravity Controller",
+	"block.starminer.gravity_core": "Gravity Core",
 	"block.starminer.inner_core": "Inner Core",
 	"block.starminer.outer_core": "Outer Core",
+	"container.starminer.gravitygui": "Gravity Core",
+	"screen.starminer.gravity_core": "Gravity Core",
 	"itemGroup.starminer": "Starminer"
 }

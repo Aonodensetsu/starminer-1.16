@@ -1,0 +1,5 @@
+{
+	"variants": {
+		"": { "model": "starminer:block/gravity_core" }
+	}
+}

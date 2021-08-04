@@ -4,6 +4,7 @@ import dev.bluecom.starminer.api.GravityCapability;
 import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.api.IGravityCapability;
 import dev.bluecom.starminer.basics.SMModContainer;
+import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
@@ -16,15 +17,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class ItemGravityController extends Item {
-	private float gravstate = 0;
-	
-	public ItemGravityController(Properties properties) {
-		super(properties);
+	public ItemGravityController() {
+		super(new Item.Properties().tab(CommonRegistryHandler.STARMINER));
 	}
 	
-	public float getGrav() {
-		return this.gravstate;
-	}
+	public float gravstate = 0;
 	
 	@Override
 	public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
