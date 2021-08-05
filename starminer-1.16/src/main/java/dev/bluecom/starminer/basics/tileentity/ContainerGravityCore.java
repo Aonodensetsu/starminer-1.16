@@ -7,8 +7,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -26,13 +26,17 @@ public class ContainerGravityCore extends Container {
 		tileEntity = world.getBlockEntity(coord);
 		this.playerEntity = player;
 		this.playerInventory = new InvWrapper(playerInventory);
-		if (tileEntity != null) { tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> { addSlotBox(h, 36, 8, 72, 9, 18, 3, 18); }); }
+		if (tileEntity != null) {
+			tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent((handler) -> {
+				addSlotBox(handler, 0, 8, 72, 9, 18, 3, 18); 
+			}); 
+		}
 		layoutPlayerInventorySlots(8, 140);
 	}
 		
 	@Override
 	public boolean stillValid(PlayerEntity player) {
-		return player.blockPosition().distSqr(new Vector3i(this.tileEntity.getBlockPos().getX() + 0.5, this.tileEntity.getBlockPos().getY() + 0.5, this.tileEntity.getBlockPos().getZ() + 0.5)) < 64;
+		return super.stillValid(IWorldPosCallable.create(player.level, this.tileEntity.getBlockPos()), player, this.tileEntity.getBlockState().getBlock());
 	}
 	
 	@Override
@@ -42,16 +46,14 @@ public class ContainerGravityCore extends Container {
 		if (slot != null && slot.hasItem()) {
 			ItemStack stack = slot.getItem();
 			itemstack = stack.copy();
-			if (index >= 0 && index < 36) {
-				if (!this.moveItemStackTo(stack, 36, 63, true)) {
+			if (index >= 0 && index < 27) {
+				if (!this.moveItemStackTo(stack, 27, 63, true)) {
 					return ItemStack.EMPTY;
 				}
-				slot.setChanged();
 			} else {
-				if (!this.moveItemStackTo(stack, 0, 36, true)) {
+				if (!this.moveItemStackTo(stack, 0, 26, true)) {
 					return ItemStack.EMPTY;
 				}
-				slot.setChanged();
 			}
 			if (stack.isEmpty()) {
 				slot.set(ItemStack.EMPTY);
@@ -64,11 +66,6 @@ public class ContainerGravityCore extends Container {
 			slot.onTake(player, stack);
 		}
 		return itemstack;
-	}
-	
-	@Override
-	public void removed(PlayerEntity player) {
-		super.removed(player);
 	}
 	
 	private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {

@@ -5,5 +5,12 @@
 	"block.starminer.outer_core": "Outer Core",
 	"container.starminer.gravitygui": "Gravity Core",
 	"screen.starminer.gravity_core": "Gravity Core",
+	"screen.starminer.terraformingtab": "Terraforming Materials",
+	"screen.starminer.subtractfive": "-5",
+	"screen.starminer.subtractone": "-1",
+	"screen.starminer.addone": "+1",
+	"screen.starminer.addfive": "+5",
+	"screen.starminer.sphere": "sph",
+	"screen.starminer.terraforming": "trf",
 	"itemGroup.starminer": "Starminer"
 }

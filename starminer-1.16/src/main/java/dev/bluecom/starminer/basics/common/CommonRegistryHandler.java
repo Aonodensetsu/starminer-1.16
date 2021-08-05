@@ -39,7 +39,7 @@ public class CommonRegistryHandler {
 		CONTAINERS.register(bus);
 	}
 	
-	private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
+	private static <T extends Block> RegistryObject<T> blockRegister(String name, Supplier<T> block) {
 		RegistryObject<T> toReturn = BLOCKS.register(name, block);
 		ITEMS.register(name, () -> new BlockItem(toReturn.get(), new Item.Properties().tab(STARMINER)));
 		return toReturn;
@@ -52,9 +52,9 @@ public class CommonRegistryHandler {
 	};
 	
 	// Blocks
-	public static final RegistryObject<Block> BLOCK_GRAVITY_CORE = registerBlock("gravity_core", () -> new BlockGravityCore());
+	public static final RegistryObject<Block> BLOCK_GRAVITY_CORE = blockRegister("gravity_core", BlockGravityCore::new);
 		
-	public static final RegistryObject<Block> BLOCK_INNER_CORE = registerBlock("inner_core",
+	public static final RegistryObject<Block> BLOCK_INNER_CORE = blockRegister("inner_core",
 		() -> new GlassBlock(AbstractBlock.Properties
 			.of(Material.STONE)
 			.noOcclusion()
@@ -65,7 +65,7 @@ public class CommonRegistryHandler {
 			.requiresCorrectToolForDrops()
 	));
 	
-	public static final RegistryObject<Block> BLOCK_OUTER_CORE = registerBlock("outer_core",
+	public static final RegistryObject<Block> BLOCK_OUTER_CORE = blockRegister("outer_core",
 		() -> new Block(AbstractBlock.Properties
 			.of(Material.STONE)
 			.harvestLevel(1)
@@ -75,14 +75,16 @@ public class CommonRegistryHandler {
 	));
 
 	// Items
-	public static final RegistryObject<Item> ITEM_GRAVITY_CONTROLLER = ITEMS.register("gravity_controller", () -> new ItemGravityController());
+	public static final RegistryObject<Item> ITEM_GRAVITY_CONTROLLER = ITEMS.register("gravity_controller", ItemGravityController::new);
 	
 	// Tile Entities
-	public static final RegistryObject<TileEntityType<TileEntityGravityCore>> TILE_GRAVITY_CORE = TILES.register("tile_gravity_core", TileEntityGravityCore.builder());
+	public static final RegistryObject<TileEntityType<TileEntityGravityCore>> TILE_GRAVITY_CORE = TILES.register("gravity_core", () -> 
+		TileEntityType.Builder.of(TileEntityGravityCore::new, BLOCK_GRAVITY_CORE.get()).build(null)
+	);
 
 	// Containers
-	public static final RegistryObject<ContainerType<ContainerGravityCore>> CONTAINER_GRAVITY_CORE = CONTAINERS.register("container_gravity_core", 
-		() -> IForgeContainerType.create((windowId, inv, data) -> {
+	public static final RegistryObject<ContainerType<ContainerGravityCore>> CONTAINER_GRAVITY_CORE = CONTAINERS.register("gravity_core", () -> 
+		IForgeContainerType.create((windowId, inv, data) -> {
 			BlockPos pos = data.readBlockPos();
 			World world = inv.player.level;
 			return new ContainerGravityCore(windowId, world, pos, inv, inv.player);

@@ -28,15 +28,15 @@ public class BlockGravityCore extends Block {
 	}
 	
 	@Override
+	public boolean hasTileEntity(BlockState state) {
+		return true;
+	}
+	
+	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new TileEntityGravityCore();
 	}
 	
-	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
-	}
-
 	@Override
 	public ActionResultType use(BlockState block, World world, BlockPos coord, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
 		if (!world.isClientSide) {
@@ -44,12 +44,13 @@ public class BlockGravityCore extends Block {
 			if (tileEntity instanceof TileEntityGravityCore) {
 				INamedContainerProvider containerProvider = new INamedContainerProvider() {
 					@Override
-					public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
-						return new ContainerGravityCore(id, world, coord, playerInventory, player);
-					}
-					@Override
 					public ITextComponent getDisplayName() {
 						return new TranslationTextComponent("screen.starminer.gravity_core");
+					}
+					
+					@Override
+					public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
+						return new ContainerGravityCore(id, world, coord, playerInventory, player);
 					}
 				};
 				NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, tileEntity.getBlockPos());

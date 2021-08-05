@@ -1,23 +1,21 @@
 package dev.bluecom.starminer.basics.tileentity;
 
-import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
-
+import javax.annotation.Nonnull;
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3i;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TileEntityGravityCore extends TileEntity {
+public class TileEntityGravityCore extends TileEntity implements ITickableTileEntity {
 	private ItemStackHandler itemHandler = new ItemStackHandler(27) {
 		@Override
 		protected void onContentsChanged(int slot) {
@@ -25,10 +23,6 @@ public class TileEntityGravityCore extends TileEntity {
 		}
 	};
 	private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
-
-	public static Supplier<TileEntityType<TileEntityGravityCore>> builder() {
-		return () -> TileEntityType.Builder.of(TileEntityGravityCore::new, CommonRegistryHandler.BLOCK_GRAVITY_CORE.get()).build(null);
-	}
 
 	public TileEntityGravityCore() {
 		super(CommonRegistryHandler.TILE_GRAVITY_CORE.get());
@@ -45,6 +39,11 @@ public class TileEntityGravityCore extends TileEntity {
 		handler.invalidate();
 	}
 	
+	@Override
+	public void tick() {
+		//if (this.level.isClientSide) { return; }
+		return;
+	}
 	
 	@Override
 	public void load(BlockState block, CompoundNBT nbt) {
@@ -58,29 +57,12 @@ public class TileEntityGravityCore extends TileEntity {
 		return super.save(nbt);
 	}
 	
+	@Nonnull
 	@Override
-	@Nullable
-	public SUpdateTileEntityPacket getUpdatePacket() {
-		CompoundNBT nbt = new CompoundNBT();
-		save(nbt);
-		return new SUpdateTileEntityPacket(this.worldPosition, 42, nbt);
-	}
-	
-	@Override
-	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-		BlockState block = level.getBlockState(this.worldPosition);
-		load(block, pkt.getTag());
-	}
-	
-	@Override
-	public CompoundNBT getUpdateTag() {
-		CompoundNBT nbt = new CompoundNBT();
-		save(nbt);
-		return nbt;
-	}
-	
-	@Override
-	public void handleUpdateTag(BlockState block, CompoundNBT tag) {
-		load(block, tag);
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+		if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+			return handler.cast();
+		}
+		return super.getCapability(cap, side);
 	}
 }
