@@ -6,10 +6,11 @@
 		"1.0.2": "Added placeholder item",
 		"1.0.3": "Added GravityController",
 		"1.0.4": "Added InnerCore and OuterCore",
-		"1.0.5": "GravityCore GUI"
+		"1.0.5": "GravityCore GUI",
+		"1.0.6": "GravityCore GUI"
 	},
 	"promos": {
-		"1.16.5-latest": "1.0.5",
-		"1.16.5-recommended": "1.0.5"
+		"1.16.5-latest": "1.0.6",
+		"1.16.5-recommended": "1.0.6"
 	}
 }

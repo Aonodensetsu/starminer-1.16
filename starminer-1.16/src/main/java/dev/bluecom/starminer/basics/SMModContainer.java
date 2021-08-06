@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.basics.common.CommonForgeEventHandler;
+import dev.bluecom.starminer.basics.common.CommonNetworkHandler;
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
 import dev.bluecom.starminer.basics.item.ItemGravityController;
 import dev.bluecom.starminer.basics.tileentity.ScreenGravityCore;
@@ -41,6 +42,7 @@ public class SMModContainer {
 		LOGGER.info("Registering the Event Handlers");
 		MinecraftForge.EVENT_BUS.register(new CommonForgeEventHandler());
 		GravityProvider.init();
+		CommonNetworkHandler.registerMessages();
 	}
 
 	private void postcomms(FMLClientSetupEvent event) {

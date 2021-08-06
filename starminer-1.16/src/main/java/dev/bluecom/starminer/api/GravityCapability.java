@@ -1,7 +1,7 @@
 package dev.bluecom.starminer.api;
 
 public class GravityCapability implements IGravityCapability {
-	private GravityDirection gravity = GravityDirection.upTOdown_YN;
+	private GravityDirection gravity = GravityDirection.UP_TO_DOWN_YN;
 	private boolean zero = false;
 	private boolean inverted = false;
 	

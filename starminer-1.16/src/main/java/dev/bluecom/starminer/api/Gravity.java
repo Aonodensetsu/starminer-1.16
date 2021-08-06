@@ -6,8 +6,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.LazyOptional;
 
 public abstract class Gravity {
-	public GravityDirection gravityDirection = GravityDirection.upTOdown_YN;
-	public GravityDirection gravityDirectionNext = GravityDirection.upTOdown_YN;
+	public GravityDirection gravityDirection = GravityDirection.UP_TO_DOWN_YN;
+	public GravityDirection gravityDirectionNext = GravityDirection.UP_TO_DOWN_YN;
 	public boolean isAttracted = false;
 	public int attractedPosX = 0;
 	public int attractedPosY = 0;
@@ -22,7 +22,7 @@ public abstract class Gravity {
 	
 	public static final GravityDirection getGravityDirection(Entity entity) {
 		GravityCapability gp = getGravityProp(entity);
-		if (gp == null) return GravityDirection.upTOdown_YN; 
+		if (gp == null) return GravityDirection.UP_TO_DOWN_YN; 
 		return gp.getGravityDir();
 	}
 	

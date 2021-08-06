@@ -23,6 +23,6 @@ public class CommonForgeEventHandler {
 	
 	@SubscribeEvent
 	public void attachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event) {
-		event.addCapability(new ResourceLocation(SMModContainer.MODID, GravityProvider.ID), new GravityProvider());
+		event.addCapability(new ResourceLocation(SMModContainer.MODID, "gravity"), new GravityProvider());
 	}
 }

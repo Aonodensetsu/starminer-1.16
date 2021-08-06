@@ -33,7 +33,11 @@ public class ContainerGravityCore extends Container {
 		}
 		layoutPlayerInventorySlots(8, 140);
 	}
-		
+	
+	public TileEntity getTile() {
+		return this.tileEntity;
+	}
+	
 	@Override
 	public boolean stillValid(PlayerEntity player) {
 		return super.stillValid(IWorldPosCallable.create(player.level, this.tileEntity.getBlockPos()), player, this.tileEntity.getBlockState().getBlock());

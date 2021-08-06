@@ -6,16 +6,21 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import dev.bluecom.starminer.basics.SMModContainer;
+import dev.bluecom.starminer.basics.common.CommonNetworkHandler;
+import dev.bluecom.starminer.basics.common.PacketGravityCoreGUI;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.button.Button.IPressable;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class ScreenGravityCore extends ContainerScreen<ContainerGravityCore> {
 	private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(SMModContainer.MODID, "textures/gui/gui_star_core.png");
+	private TileEntityGravityCore tileEntity;
 	int edgeX;
 	int edgeY;
 	
@@ -23,6 +28,10 @@ public class ScreenGravityCore extends ContainerScreen<ContainerGravityCore> {
 		super(container, inventory, title);
 		imageWidth = 176;
 		imageHeight = 222;
+		TileEntity tile = container.getTile();
+		if (tile instanceof TileEntityGravityCore) {
+			tileEntity = (TileEntityGravityCore) tile;
+		}
 	}
 	
 	@Override
@@ -34,7 +43,21 @@ public class ScreenGravityCore extends ContainerScreen<ContainerGravityCore> {
 	
 	@Override
 	protected void renderLabels(MatrixStack matrix, int mouseX, int mouseY) {
-		this.font.draw(matrix, new TranslationTextComponent("screen.starminer.terraformingtab"), 8, 60, Color.DARK_GRAY.getRGB());
+		int displayTop = 8;
+		int displayLeft = 44;
+		int displayWidth = 54;
+		int displayHeight = 50;
+		float txtscale = 0.65F;
+		// parameter descriptions
+		matrix.scale(txtscale, txtscale, txtscale);
+		drawCenteredString(matrix, font, new TranslationTextComponent("screen.starminer.gravityradius"), Math.round((displayLeft+displayWidth/2)/txtscale), Math.round((displayTop+3)/txtscale), Color.WHITE.getRGB());
+		drawCenteredString(matrix, font, new TranslationTextComponent("screen.starminer.starradius"), Math.round((displayLeft+displayWidth/2)/txtscale), Math.round((displayTop+displayHeight/2+3)/txtscale), Color.WHITE.getRGB());
+		matrix.scale(1/txtscale, 1/txtscale, 1/txtscale);
+		// gravity values
+		drawCenteredString(matrix, font, new StringTextComponent(String.valueOf(tileEntity.getGravityRadius())), displayLeft+displayWidth/2, displayTop+displayHeight/4, Color.WHITE.getRGB());
+		drawCenteredString(matrix, font, new StringTextComponent(String.valueOf(tileEntity.getStarRadius())), displayLeft+displayWidth/2, displayTop+displayHeight/4*3, Color.WHITE.getRGB());
+		// inventory names
+		this.font.draw(matrix, new TranslationTextComponent("screen.starminer.terraforming"), 8, 60, Color.DARK_GRAY.getRGB());
 		this.font.draw(matrix, this.inventory.getDisplayName(), 8, 128, Color.DARK_GRAY.getRGB());
 		int arrayY = edgeY+9; // top of buttons
 		int leftX = edgeX+6; // left of left buttons
@@ -46,45 +69,77 @@ public class ScreenGravityCore extends ContainerScreen<ContainerGravityCore> {
 		// gravity subtract
 		addButton(new Button(leftX, arrayY, arrayX, 20, new TranslationTextComponent("screen.starminer.subtractfive"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), -5, 0);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		addButton(new Button(leftX+arrayX+gapX, arrayY, arrayX, 20, new TranslationTextComponent("screen.starminer.subtractone"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), -1, 0);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		// radius subtract
 		addButton(new Button(leftX, arrayY+gapY+20, arrayX, 20, new TranslationTextComponent("screen.starminer.subtractfive"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 0, -5);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		addButton(new Button(leftX+arrayX+gapX, arrayY+gapY+20, arrayX, 20, new TranslationTextComponent("screen.starminer.subtractone"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 0, -1);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		// gravity add
 		addButton(new Button(rightX, arrayY, arrayX, 20, new TranslationTextComponent("screen.starminer.addone"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 1, 0);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		addButton(new Button(rightX+arrayX+gapX, arrayY, arrayX, 20, new TranslationTextComponent("screen.starminer.addfive"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 5, 0);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		// radius add
 		addButton(new Button(rightX, arrayY+gapY+20, arrayX, 20, new TranslationTextComponent("screen.starminer.addone"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 0, 1);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		addButton(new Button(rightX+arrayX+gapX, arrayY+gapY+20, arrayX, 20, new TranslationTextComponent("screen.starminer.addfive"), new IPressable() {
 			@Override
-			public void onPress(Button button) {}
+			public void onPress(Button button) {
+				PacketGravityCoreGUI packet = new PacketGravityCoreGUI(tileEntity.getBlockPos(), 0, 5);
+				CommonNetworkHandler.sendToServer(packet);
+				tileEntity.setChanged();
+			}
 		}));
 		// function buttons
 		addButton(new Button(rightX+2*arrayX+2*gapX, arrayY, buttonX, 20, new TranslationTextComponent("screen.starminer.sphere"), new IPressable() {
 			@Override
 			public void onPress(Button button) {}
 		}));
-		addButton(new Button(rightX+2*arrayX+2*gapX, arrayY+gapY+20, buttonX, 20, new TranslationTextComponent("screen.starminer.terraforming"), new IPressable() {
+		addButton(new Button(rightX+2*arrayX+2*gapX, arrayY+gapY+20, buttonX, 20, new TranslationTextComponent("screen.starminer.invert"), new IPressable() {
 			@Override
 			public void onPress(Button button) {}
 		}));

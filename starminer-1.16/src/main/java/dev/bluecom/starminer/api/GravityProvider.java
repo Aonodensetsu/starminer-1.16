@@ -11,7 +11,6 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class GravityProvider implements ICapabilitySerializable<CompoundNBT> {
-	public static final String ID = "gravity";
 	@CapabilityInject(IGravityCapability.class)
 	public static final Capability<IGravityCapability> GRAVITY = null;
 	

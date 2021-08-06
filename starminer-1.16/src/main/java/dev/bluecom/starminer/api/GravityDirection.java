@@ -4,12 +4,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 	
 public enum GravityDirection {
-	upTOdown_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.matirxRoatUpToDownI, GravityConst.matirxRoatUpToDownD, GravityConst.forgeSideRotUpToDown),
-	downTOup_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.matirxRoatDownTOupI, GravityConst.matirxRoatDownTOupD, GravityConst.forgeSideRotDownTOup),
-	eastTOwest_XN(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.5F, -1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, GravityConst.matirxRoatEastTOwestI, GravityConst.matirxRoatEastTOwestD, GravityConst.forgeSideRotEastTOwest),
-	westTOeast_XP(0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F, -0.5F, 1.0F, 1.0F, 0.0F, -1.0F, 0.0F, 0.0F, GravityConst.matirxRoatWestTOeastI, GravityConst.matirxRoatWestTOeastD, GravityConst.forgeSideRotWestTOeast),
-	northTOsouth_ZP(1.0F, 0.0F, 0.0F, 0.0F, -1.0F, 0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, -1.0F, GravityConst.matirxRoatNorthTOsouthI, GravityConst.matirxRoatNorthTOsouthD, GravityConst.forgeSideRotNorthTOsouth),
-	southTOnorth_ZN(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, -0.5F, 0.0F, 0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 1.0F, GravityConst.matirxRoatSouthTOnorthI, GravityConst.matirxRoatSouthTOnorthD, GravityConst.forgeSideRotSouthTOnorth);
+	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN),
+	DOWN_TO_UP_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.MATRIX_ROT_DOWN_TO_UP_I, GravityConst.MATRIX_ROT_DOWN_TO_UP_D, GravityConst.FORGE_SIDE_ROT_DOWN_TO_UP),
+	EAST_TO_WEST_XN(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.5F, -1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_EAST_TO_WEST_I, GravityConst.MATRIX_ROT_EAST_TO_WEST_D, GravityConst.FORGE_SIDE_ROT_EAST_TO_WEST),
+	WEST_TO_EAST_XP(0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F, -0.5F, 1.0F, 1.0F, 0.0F, -1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_WEST_TO_EAST_I, GravityConst.MATRIX_ROT_WEST_TO_EAST_D, GravityConst.FORGE_SIDE_ROT_WEST_TO_EAST),
+	NORTH_TO_SOUTH_ZP(1.0F, 0.0F, 0.0F, 0.0F, -1.0F, 0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, -1.0F, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_I, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_D, GravityConst.FORGE_SIDE_ROT_NORTH_TO_SOUTH),
+	SOUTH_TO_NORTH_ZN(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, -0.5F, 0.0F, 0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 1.0F, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_I, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_D, GravityConst.FORGE_SIDE_ROT_SOUTH_TO_NORTH);
 		
 	public float pitchRotDirX;
 	public float pitchRotDirY;
@@ -55,20 +55,20 @@ public enum GravityDirection {
 
 	public static GravityDirection turnWayForNormal(GravityDirection gDir) {
 		switch (gDir) {
-			case downTOup_YP:
-				return downTOup_YP;
-			case eastTOwest_XN:
-				return westTOeast_XP;
-			case westTOeast_XP:
-				return eastTOwest_XN;
-			case northTOsouth_ZP:
-				return southTOnorth_ZN;
-			case southTOnorth_ZN:
-				return northTOsouth_ZP;
-			case upTOdown_YN:
-				return upTOdown_YN;
+			case DOWN_TO_UP_YP:
+				return DOWN_TO_UP_YP;
+			case EAST_TO_WEST_XN:
+				return WEST_TO_EAST_XP;
+			case WEST_TO_EAST_XP:
+				return EAST_TO_WEST_XN;
+			case NORTH_TO_SOUTH_ZP:
+				return SOUTH_TO_NORTH_ZN;
+			case SOUTH_TO_NORTH_ZN:
+				return NORTH_TO_SOUTH_ZP;
+			case UP_TO_DOWN_YN:
+				return UP_TO_DOWN_YN;
 			default:
-				return upTOdown_YN;
+				return UP_TO_DOWN_YN;
 		} 
 	}
 

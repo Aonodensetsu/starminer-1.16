@@ -13,22 +13,22 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
 		GravityDirection grav = instance.getGravityDir();
 		String dir = null;
 		switch (grav) {
-			case downTOup_YP:
+			case DOWN_TO_UP_YP:
 				dir = "YP";
 				break;
-			case eastTOwest_XN:
+			case EAST_TO_WEST_XN:
 				dir = "XN";
 				break;
-			case northTOsouth_ZP:
+			case NORTH_TO_SOUTH_ZP:
 				dir = "ZP";
 				break;
-			case southTOnorth_ZN:
+			case SOUTH_TO_NORTH_ZN:
 				dir = "ZN";
 				break;
-			case upTOdown_YN:
+			case UP_TO_DOWN_YN:
 				dir = "YN";
 				break;
-			case westTOeast_XP:
+			case WEST_TO_EAST_XP:
 				dir = "XP";
 				break;
 			default:
@@ -48,25 +48,25 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
 		GravityDirection grav;
 		switch (nbt2.getString("gravity")) {
 			case "YP":
-				grav = GravityDirection.downTOup_YP;
+				grav = GravityDirection.DOWN_TO_UP_YP;
 				break;
 			case "XN":
-				grav = GravityDirection.eastTOwest_XN;
+				grav = GravityDirection.EAST_TO_WEST_XN;
 				break;
 			case "ZP":
-				grav = GravityDirection.northTOsouth_ZP;
+				grav = GravityDirection.NORTH_TO_SOUTH_ZP;
 				break;
 			case "ZN":
-				grav = GravityDirection.southTOnorth_ZN;
+				grav = GravityDirection.SOUTH_TO_NORTH_ZN;
 				break;
 			case "YN":
-				grav = GravityDirection.upTOdown_YN;
+				grav = GravityDirection.UP_TO_DOWN_YN;
 				break;
 			case "XP":
-				grav = GravityDirection.westTOeast_XP;
+				grav = GravityDirection.WEST_TO_EAST_XP;
 				break;
 			default:
-				grav = GravityDirection.upTOdown_YN;
+				grav = GravityDirection.UP_TO_DOWN_YN;
 				break;
 		};
 		instance.setGravity(grav, nbt2.getBoolean("zero"), nbt2.getBoolean("inverted"));
