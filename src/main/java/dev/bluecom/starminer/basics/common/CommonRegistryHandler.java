@@ -47,13 +47,11 @@ public class CommonRegistryHandler {
 		return toReturn;
 	}
 	
-	// Item Tab
 	public static final ItemGroup STARMINER = new ItemGroup("starminer") {
 		@Override
 		public ItemStack makeIcon() { return new ItemStack(CommonRegistryHandler.BLOCK_GRAVITY_CORE.get()); }
 	};
 	
-	// Blocks
 	public static final RegistryObject<Block> BLOCK_GRAVITY_CORE = blockRegister("gravity_core", BlockGravityCore::new);
 		
 	public static final RegistryObject<Block> BLOCK_INNER_CORE = blockRegister("inner_core",
@@ -76,15 +74,12 @@ public class CommonRegistryHandler {
 			.requiresCorrectToolForDrops()
 	));
 
-	// Items
 	public static final RegistryObject<Item> ITEM_GRAVITY_CONTROLLER = ITEMS.register("gravity_controller", ItemGravityController::new);
 	
-	// Tile Entities
 	public static final RegistryObject<TileEntityType<TileEntityGravityCore>> TILE_GRAVITY_CORE = TILES.register("gravity_core", () -> 
 		TileEntityType.Builder.of(TileEntityGravityCore::new, BLOCK_GRAVITY_CORE.get()).build(null)
 	);
 
-	// Containers
 	public static final RegistryObject<ContainerType<ContainerGravityCore>> CONTAINER_GRAVITY_CORE = CONTAINERS.register("gravity_core", () -> 
 		IForgeContainerType.create((windowId, inv, data) -> {
 			BlockPos pos = data.readBlockPos();

@@ -49,7 +49,6 @@ public class PacketGravityCapability {
 	}
 	
 	public boolean handle(Supplier<NetworkEvent.Context> ctx) {
-		ctx.get().enqueueWork(() -> {});
-		return false;
+		return true;
 	}
 }

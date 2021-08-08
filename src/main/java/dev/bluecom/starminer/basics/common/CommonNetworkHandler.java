@@ -18,13 +18,13 @@ public class CommonNetworkHandler {
 	public static void registerMessages() {
 		CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(ModContainer.MODID, "simple_channel"), () -> "1.0", (s) -> true, (s) -> true);
 		
-		CHANNEL.messageBuilder(PacketGravityCoreGUI.class, nextID())
+		CHANNEL.messageBuilder(PacketGravityCoreGUI.class, nextID(), NetworkDirection.PLAY_TO_SERVER)
 			.encoder(PacketGravityCoreGUI::toBytes)
 			.decoder(PacketGravityCoreGUI::new)
 			.consumer(PacketGravityCoreGUI::handle)
 			.add();
 		
-		CHANNEL.messageBuilder(PacketGravityCapability.class, nextID())
+		CHANNEL.messageBuilder(PacketGravityCapability.class, nextID(), NetworkDirection.PLAY_TO_CLIENT)
 			.encoder(PacketGravityCapability::toBytes)
 			.decoder(PacketGravityCapability::new)
 			.consumer(PacketGravityCapability::handle)

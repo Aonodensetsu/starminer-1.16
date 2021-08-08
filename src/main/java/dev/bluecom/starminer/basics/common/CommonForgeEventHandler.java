@@ -67,18 +67,17 @@ public class CommonForgeEventHandler {
 		}
 	}
 	
-	//@SubscribeEvent
-	//public void renderLivingPre(final RenderLivingEvent.Pre<?, ?> event) {
-	//	if (event.getEntity() instanceof PlayerEntity) { //temporarily only overwrite player
-	//		PlayerEntity entity = (PlayerEntity) event.getEntity();
-	//		IGravityCapability grav = GravityCapability.getGravityProp(entity);
-	//		System.out.println(grav.getAttracted());
+	@SubscribeEvent
+	public void renderLivingPre(final RenderLivingEvent.Pre<?, ?> event) {
+		if (event.getEntity() instanceof PlayerEntity) { //temporarily only overwrite player
+			IGravityCapability grav = GravityCapability.getGravityProp((PlayerEntity) event.getEntity());
+			System.out.println(grav.getAttracted());
 		//	if (cap.getAttracted()) {
 		//		System.out.println("overwriting");
 		//		event.setCanceled(true);
 		//		Entity entity = event.getEntity().getEntity();
 		//		Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity).render(entity, MathHelper.lerp(event.getPartialRenderTick(), entity.yRotO, entity.yRot), event.getPartialRenderTick(), event.getMatrixStack(), event.getBuffers(), event.getLight());
 		//	}
-	//	}
-	//}
+		}
+	}
 }
