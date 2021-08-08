@@ -3,7 +3,7 @@ package dev.bluecom.starminer.basics.item;
 import dev.bluecom.starminer.api.GravityCapability;
 import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.api.IGravityCapability;
-import dev.bluecom.starminer.basics.SMModContainer;
+import dev.bluecom.starminer.basics.ModContainer;
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemPropertyGetter;
@@ -28,9 +28,9 @@ public class ItemGravityController extends Item {
 		if (!world.isClientSide) {
 			LazyOptional<IGravityCapability> gravity = player.getCapability(GravityProvider.GRAVITY);
 			GravityCapability cap = (GravityCapability) gravity.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"));
-			cap.setGravity(null, null, !cap.getGravityInverted());
+			cap.setGravityInverted(!cap.getGravityInverted());
 			this.gravstate = cap.getGravityInverted() ? 1 : 0;
-			IItemPropertyGetter prop = ItemModelsProperties.getProperty(player.getItemInHand(hand).getItem(), new ResourceLocation(SMModContainer.MODID, "gravitystate"));
+			IItemPropertyGetter prop = ItemModelsProperties.getProperty(player.getItemInHand(hand).getItem(), new ResourceLocation(ModContainer.MODID, "gravitystate"));
 			prop.call(player.getItemInHand(hand), null, null);
 		}
 		return super.use(world, player, hand);

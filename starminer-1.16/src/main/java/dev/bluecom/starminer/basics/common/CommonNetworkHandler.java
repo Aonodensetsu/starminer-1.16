@@ -1,6 +1,6 @@
 package dev.bluecom.starminer.basics.common;
 
-import dev.bluecom.starminer.basics.SMModContainer;
+import dev.bluecom.starminer.basics.ModContainer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -8,7 +8,7 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class CommonNetworkHandler {
-	private static SimpleChannel CHANNEL;
+	public static SimpleChannel CHANNEL;
 	private static int ID = 0;
 	
 	private static int nextID() {
@@ -16,12 +16,18 @@ public class CommonNetworkHandler {
 	}
 	
 	public static void registerMessages() {
-		CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(SMModContainer.MODID, "simple_channel"), () -> "1.0", (s) -> true, (s) -> true);
+		CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation(ModContainer.MODID, "simple_channel"), () -> "1.0", (s) -> true, (s) -> true);
 		
 		CHANNEL.messageBuilder(PacketGravityCoreGUI.class, nextID())
 			.encoder(PacketGravityCoreGUI::toBytes)
 			.decoder(PacketGravityCoreGUI::new)
 			.consumer(PacketGravityCoreGUI::handle)
+			.add();
+		
+		CHANNEL.messageBuilder(PacketGravityCapability.class, nextID())
+			.encoder(PacketGravityCapability::toBytes)
+			.decoder(PacketGravityCapability::new)
+			.consumer(PacketGravityCapability::handle)
 			.add();
 	}
 	

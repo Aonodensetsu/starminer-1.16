@@ -20,8 +20,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(SMModContainer.MODID)
-public class SMModContainer {
+@Mod(ModContainer.MODID)
+public class ModContainer {
 	public static final String MODID = "starminer";
 	public static final int PACKET_TYPE_GCORE_GUIACT = 10;
 	public static final int PACKET_TYPE_SKYMAP = 12;
@@ -32,12 +32,13 @@ public class SMModContainer {
 	
 	private static final Logger LOGGER = LogManager.getLogger();
 	
-	public SMModContainer() {
+	public ModContainer() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(this::setup);
 		bus.addListener(this::postcomms);
 		CommonRegistryHandler.init(bus);
 	}
+	
 	private void setup(final FMLCommonSetupEvent event) {
 		LOGGER.info("Registering the Event Handlers");
 		MinecraftForge.EVENT_BUS.register(new CommonForgeEventHandler());
@@ -47,17 +48,14 @@ public class SMModContainer {
 
 	private void postcomms(FMLClientSetupEvent event) {
 		event.enqueueWork(() -> {
-			// make inner_core translucent
 			RenderTypeLookup.setRenderLayer(CommonRegistryHandler.BLOCK_INNER_CORE.get(), RenderType.translucent());
-			// add gravity_controller state switching
 			ItemModelsProperties.register(
 				CommonRegistryHandler.ITEM_GRAVITY_CONTROLLER.get(),
-				new ResourceLocation(SMModContainer.MODID, "gravitystate"), (stack, world, living) -> { 
+				new ResourceLocation(ModContainer.MODID, "gravitystate"), (stack, world, living) -> { 
 					ItemGravityController item = (ItemGravityController) stack.getItem();
 					return item.gravstate;
 				}
 			);
-			// register screen
 			ScreenManager.register(CommonRegistryHandler.CONTAINER_GRAVITY_CORE.get(), ScreenGravityCore::new);
 		});
 	}

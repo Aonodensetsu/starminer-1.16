@@ -2,6 +2,7 @@ package dev.bluecom.starminer.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,7 +15,11 @@ public class GravityProvider implements ICapabilitySerializable<CompoundNBT> {
 	@CapabilityInject(IGravityCapability.class)
 	public static final Capability<IGravityCapability> GRAVITY = null;
 	
-	private LazyOptional<IGravityCapability> instance = LazyOptional.of(GRAVITY::getDefaultInstance);
+	private final LazyOptional<IGravityCapability> instance;
+
+	public GravityProvider(LivingEntity entity) {
+		instance = LazyOptional.of(() -> new GravityCapability(entity));
+	}
 	
 	public static void init() {
 		CapabilityManager.INSTANCE.register(IGravityCapability.class, new GravityStorage(), GravityCapability::new);

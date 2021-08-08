@@ -69,6 +69,8 @@ public class GravityStorage implements Capability.IStorage<IGravityCapability> {
 				grav = GravityDirection.UP_TO_DOWN_YN;
 				break;
 		};
-		instance.setGravity(grav, nbt2.getBoolean("zero"), nbt2.getBoolean("inverted"));
+		instance.setGravityDir(grav);
+		instance.setGravityZero(nbt2.getBoolean("zero"));
+		instance.setGravityInverted(nbt2.getBoolean("inverted"));
 	}
 }

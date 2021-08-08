@@ -12,7 +12,14 @@
 	"screen.starminer.subtractone": "-1",
 	"screen.starminer.addone": "+1",
 	"screen.starminer.addfive": "+5",
-	"screen.starminer.sphere": "sph",
-	"screen.starminer.invert": "inv",
+	"screen.starminer.sphere": "sphr",
+	"screen.starminer.cube": "cube",
+	"screen.starminer.xcyllinder": "xcyl",
+	"screen.starminer.ycyllinder": "ycyl",
+	"screen.starminer.zcyllinder": "zcyl",
+	"screen.starminer.notfound": "err",
+	"screen.starminer.normal": "nrml",
+	"screen.starminer.inverted": "invr",
+	"screen.starminer.zero": "zero",
 	"itemGroup.starminer": "Starminer"
 }

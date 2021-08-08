@@ -1,7 +1,7 @@
 package dev.bluecom.starminer.basics.common;
 
 import java.util.function.Supplier;
-import dev.bluecom.starminer.basics.SMModContainer;
+import dev.bluecom.starminer.basics.ModContainer;
 import dev.bluecom.starminer.basics.block.BlockGravityCore;
 import dev.bluecom.starminer.basics.item.ItemGravityController;
 import dev.bluecom.starminer.basics.tileentity.ContainerGravityCore;
@@ -17,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
@@ -27,10 +28,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class CommonRegistryHandler {
-	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SMModContainer.MODID);
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, SMModContainer.MODID);
-	public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, SMModContainer.MODID);
-	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, SMModContainer.MODID);
+	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ModContainer.MODID);
+	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModContainer.MODID);
+	public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, ModContainer.MODID);
+	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, ModContainer.MODID);
+	public static RegistryKey<World> DIMENSION_ZERO_GRAVITY;
 
 	public static void init(IEventBus bus) {
 		BLOCKS.register(bus);
