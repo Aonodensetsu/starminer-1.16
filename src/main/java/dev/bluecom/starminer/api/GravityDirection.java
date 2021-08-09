@@ -1,8 +1,9 @@
 package dev.bluecom.starminer.api;
-	
+
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
-	
+
 public enum GravityDirection {
 	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN),
 	DOWN_TO_UP_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.MATRIX_ROT_DOWN_TO_UP_I, GravityConst.MATRIX_ROT_DOWN_TO_UP_D, GravityConst.FORGE_SIDE_ROT_DOWN_TO_UP),
@@ -65,8 +66,6 @@ public enum GravityDirection {
 				return SOUTH_TO_NORTH_ZN;
 			case SOUTH_TO_NORTH_ZN:
 				return NORTH_TO_SOUTH_ZP;
-			case UP_TO_DOWN_YN:
-				return UP_TO_DOWN_YN;
 			default:
 				return UP_TO_DOWN_YN;
 		} 
@@ -82,7 +81,7 @@ public enum GravityDirection {
 		return rotateVec3At(this, vec3, centerVec3);
 	}
 	
-	public static final Vector3d rotateVec3(GravityDirection dir, Vector3d vec3) {
+	public static Vector3d rotateVec3(GravityDirection dir, Vector3d vec3) {
 		double x = vec3.x;
 		double y = vec3.y;
 		double z = vec3.z;
@@ -94,11 +93,11 @@ public enum GravityDirection {
 		);
 	}
 	
-	public static final Vector3d rotateVec3At(GravityDirection dir, Vector3d vec3, Vector3d centerVec3) {
+	public static Vector3d rotateVec3At(GravityDirection dir, Vector3d vec3, Vector3d centerVec3) {
 		return rotateVec3At(dir, centerVec3, centerVec3.x, centerVec3.y, centerVec3.z);
 	}
 	
-	public static final Vector3d rotateVec3At(GravityDirection dir, Vector3d vec3, double centerX, double centerY, double centerZ) {
+	public static Vector3d rotateVec3At(GravityDirection dir, Vector3d vec3, double centerX, double centerY, double centerZ) {
 		double x = vec3.x - centerX;
 		double y = vec3.y - centerY;
 		double z = vec3.z - centerZ;
@@ -113,7 +112,7 @@ public enum GravityDirection {
 	public double[] rotateXYZAt(double[] retVal, double argX, double argY, double argZ, double centerX, double centerY, double centerZ) {
 		return rotateXYZAt(this, retVal, argX, argY, argZ, centerX, centerY, centerZ);
 	}
-	public static final double[] rotateXYZAt(GravityDirection dir, double[] retVal, double argX, double argY, double argZ, double centerX, double centerY, double centerZ) {
+	public static double[] rotateXYZAt(GravityDirection dir, double[] retVal, double argX, double argY, double argZ, double centerX, double centerY, double centerZ) {
 		double x = argX - centerX;
 		double y = argY - centerY;
 		double z = argZ - centerZ;
@@ -127,7 +126,7 @@ public enum GravityDirection {
 	public float[] rotateXYZAt(float[] retVal, float argX, float argY, float argZ, float centerX, float centerY, float centerZ) {
 		return rotateXYZAt(this, retVal, argX, argY, argZ, centerX, centerY, centerZ);
 	}
-	public static final float[] rotateXYZAt(GravityDirection dir, float[] retVal, float argX, float argY, float argZ, float centerX, float centerY, float centerZ) {
+	public static float[] rotateXYZAt(GravityDirection dir, float[] retVal, float argX, float argY, float argZ, float centerX, float centerY, float centerZ) {
 		float x = argX - centerX;
 		float y = argY - centerY;
 		float z = argZ - centerZ;
@@ -141,7 +140,7 @@ public enum GravityDirection {
 	public int[] rotateXYZAt(int[] retVal, int argX, int argY, int argZ, int centerX, int centerY, int centerZ) {
 		return rotateXYZAt(this, retVal, argX, argY, argZ, centerX, centerY, centerZ);
 	}
-	public static final int[] rotateXYZAt(GravityDirection dir, int[] retVal, int argX, int argY, int argZ, int centerX, int centerY, int centerZ) {
+	public static int[] rotateXYZAt(GravityDirection dir, int[] retVal, int argX, int argY, int argZ, int centerX, int centerY, int centerZ) {
 		int x = argX - centerX;
 		int y = argY - centerY;
 		int z = argZ - centerZ;
@@ -156,14 +155,14 @@ public enum GravityDirection {
 	public AxisAlignedBB rotateAABBAt(AxisAlignedBB aabb, int x, int y, int z) {
 		return rotateAABBAt(this, aabb, x, y, z);
 	}
-	public static final AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, int x, int y, int z) {
+	public static AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, int x, int y, int z) {
 		return rotateAABBAt(dir, aabb, x + 0.5D, y + 0.5D, z + 0.5D);
 	}
 	public AxisAlignedBB rotateAABBAt(AxisAlignedBB aabb, double roatCenterX, double roatCenterY, double roatCenterZ) {
 		return rotateAABBAt(this, aabb, roatCenterX, roatCenterY, roatCenterZ);
 	}
 	
-	public static final AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, double roatCenterX, double roatCenterY, double roatCenterZ) {
+	public static AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, double roatCenterX, double roatCenterY, double roatCenterZ) {
 		double aabbminX = aabb.minX - roatCenterX;
 		double aabbminY = aabb.minY - roatCenterY;
 		double aabbminZ = aabb.minZ - roatCenterZ;
@@ -186,5 +185,57 @@ public enum GravityDirection {
 			Math.min(y1, y2),
 			Math.min(z1, z2)
 		);
+	}
+
+	public Vector3d adjustLookVec(Vector3d input) {
+		double[] d = this.adjustXYZValues(input.x, input.y, input.z);
+		return new Vector3d(d[0], d[1], d[2]);
+	}
+
+	private double[] adjustXYZValues(double x, double y, double z) {
+		switch (this) {
+			case DOWN_TO_UP_YP:
+				return new double[]{-x, -y, z};
+			case EAST_TO_WEST_XN:
+				return new double[]{y, -x, z};
+			case WEST_TO_EAST_XP:
+				return new double[]{-y, x, z};
+			case NORTH_TO_SOUTH_ZP:
+				return new double[]{x, z, -y};
+			case SOUTH_TO_NORTH_ZN:
+				return new double[]{x, -z, y};
+			default:
+				return new double[]{x, y, z};
+		}
+	}
+
+	public void runCameraTransformation() {
+		int x = 0, y = 0, z = 0;
+		switch (this) {
+			case DOWN_TO_UP_YP:
+				z = 180;
+				break;
+			case SOUTH_TO_NORTH_ZN:
+				x = 90;
+				break;
+			case WEST_TO_EAST_XP:
+				z = 90;
+				break;
+			case NORTH_TO_SOUTH_ZP:
+				x = -90;
+				break;
+			case EAST_TO_WEST_XN:
+				z = -90;
+				break;
+		}
+		if (x != 0) {
+			GlStateManager._rotatef(x, 1, 0, 0);
+		}
+		if (y != 0) {
+			GlStateManager._rotatef(y, 0, 1, 0);
+		}
+		if (z != 0) {
+			GlStateManager._rotatef(z, 0, 0, 1);
+		}
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface IRotateSleepingViewHandler {
-	public static final ArrayList<IRotateSleepingViewHandler> handlerList = new ArrayList<IRotateSleepingViewHandler>();
+	ArrayList<IRotateSleepingViewHandler> handlerList = new ArrayList<>();
 	
 	boolean rotateSleepingFPView();
 	

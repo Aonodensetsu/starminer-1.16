@@ -7,10 +7,10 @@ import net.minecraft.world.Teleporter;
 
 public interface IMountTeleportHandler {
 	boolean handleSpaceTeleport(IEntityTransfer paramIEntityTransfer, Teleporter paramTeleporter, int paramInt, double paramDouble1, double paramDouble2, double paramDouble3, List<?> paramList);
+
+	interface IEntityTransfer {
+		Entity travelEntityToDimension(Entity param1Entity, int param1Int, Teleporter param1Teleporter);
 	
-	public static interface IEntityTransfer {
-	Entity travelEntityToDimension(Entity param1Entity, int param1Int, Teleporter param1Teleporter);
-	
-	void travelPlayerToDimension(PlayerEntity param1EntityPlayer, int param1Int, Teleporter param1Teleporter);
+		void travelPlayerToDimension(PlayerEntity param1EntityPlayer, int param1Int, Teleporter param1Teleporter);
 	}
 }

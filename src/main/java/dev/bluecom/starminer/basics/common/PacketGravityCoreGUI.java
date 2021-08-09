@@ -10,11 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class PacketGravityCoreGUI {
-	private BlockPos coord;
-	private int gravRad;
-	private int starRad;
-	private boolean message;
-	private boolean inversion;
+	private final BlockPos coord;
+	private final int gravRad;
+	private final int starRad;
+	private final boolean message;
+	private final boolean inversion;
 	
 	public PacketGravityCoreGUI(BlockPos coord, int grav, int star, boolean msg, boolean inv) {
 		this.coord = coord;
@@ -46,10 +46,10 @@ public class PacketGravityCoreGUI {
 			if (tile instanceof TileEntityGravityCore) {
 				TileEntityGravityCore tile2 = (TileEntityGravityCore) tile; 
 				tile2.changeRadius(gravRad, starRad);
-				if (message == true) {
+				if (message) {
 					tile2.nextGravityType();
 				}
-				if (inversion == true) {
+				if (inversion) {
 					tile2.nextInvType();
 				}
 				BlockState block = tile2.getBlockState();

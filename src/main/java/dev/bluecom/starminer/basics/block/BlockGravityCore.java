@@ -21,6 +21,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockGravityCore extends Block {
 	public BlockGravityCore() {
@@ -36,20 +37,21 @@ public class BlockGravityCore extends Block {
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new TileEntityGravityCore();
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public ActionResultType use(BlockState block, World world, BlockPos coord, PlayerEntity player, Hand hand, BlockRayTraceResult ray) {
+	public @NotNull ActionResultType use(@NotNull BlockState block, World world, @NotNull BlockPos coord, @NotNull PlayerEntity player, @NotNull Hand hand, @NotNull BlockRayTraceResult ray) {
 		if (!world.isClientSide) {
 			TileEntity tileEntity = world.getBlockEntity(coord);
 			if (tileEntity instanceof TileEntityGravityCore) {
 				INamedContainerProvider containerProvider = new INamedContainerProvider() {
 					@Override
-					public ITextComponent getDisplayName() {
+					public @NotNull ITextComponent getDisplayName() {
 						return new TranslationTextComponent("screen.starminer.gravity_core");
 					}
 					
 					@Override
-					public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
+					public Container createMenu(int id, @NotNull PlayerInventory playerInventory, @NotNull PlayerEntity player) {
 						return new ContainerGravityCore(id, world, coord, playerInventory, player);
 					}
 				};

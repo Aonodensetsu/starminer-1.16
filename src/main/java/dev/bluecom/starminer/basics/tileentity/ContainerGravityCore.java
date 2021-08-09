@@ -14,22 +14,18 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.NotNull;
 
 public class ContainerGravityCore extends Container {
-	private TileEntity tileEntity;
-	@SuppressWarnings("unused")
-	private PlayerEntity playerEntity;
-	private IItemHandler playerInventory;
+	private final TileEntity tileEntity;
+	private final IItemHandler playerInventory;
 	
 	public ContainerGravityCore(int id, World world, BlockPos coord, PlayerInventory playerInventory, PlayerEntity player) {
 		super(CommonRegistryHandler.CONTAINER_GRAVITY_CORE.get(), id);
 		tileEntity = world.getBlockEntity(coord);
-		this.playerEntity = player;
 		this.playerInventory = new InvWrapper(playerInventory);
 		if (tileEntity != null) {
-			tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent((handler) -> {
-				addSlotBox(handler, 0, 8, 72, 9, 18, 3, 18); 
-			}); 
+			tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent((handler) -> addSlotBox(handler, 0, 8, 72, 9, 18, 3, 18));
 		}
 		layoutPlayerInventorySlots(8, 140);
 	}
@@ -39,18 +35,18 @@ public class ContainerGravityCore extends Container {
 	}
 	
 	@Override
-	public boolean stillValid(PlayerEntity player) {
-		return super.stillValid(IWorldPosCallable.create(player.level, this.tileEntity.getBlockPos()), player, this.tileEntity.getBlockState().getBlock());
+	public boolean stillValid(@NotNull PlayerEntity player) {
+		return Container.stillValid(IWorldPosCallable.create(player.level, this.tileEntity.getBlockPos()), player, this.tileEntity.getBlockState().getBlock());
 	}
 	
 	@Override
-	public ItemStack quickMoveStack(PlayerEntity player, int index) {
+	public @NotNull ItemStack quickMoveStack(@NotNull PlayerEntity player, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
 		if (slot != null && slot.hasItem()) {
 			ItemStack stack = slot.getItem();
 			itemstack = stack.copy();
-			if (index >= 0 && index < 27) {
+			if (index < 27) {
 				if (!this.moveItemStackTo(stack, 27, 63, true)) {
 					return ItemStack.EMPTY;
 				}

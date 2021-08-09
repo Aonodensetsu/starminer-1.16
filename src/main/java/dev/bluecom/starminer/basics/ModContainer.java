@@ -1,5 +1,8 @@
 package dev.bluecom.starminer.basics;
 
+import dev.bluecom.starminer.basics.common.ConfigHandler;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import dev.bluecom.starminer.api.GravityProvider;
@@ -37,6 +40,7 @@ public class ModContainer {
 		bus.addListener(this::setup);
 		bus.addListener(this::postcomms);
 		CommonRegistryHandler.init(bus);
+		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> new ConfigHandler());
 	}
 	
 	private void setup(final FMLCommonSetupEvent event) {

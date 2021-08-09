@@ -11,13 +11,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
+import javax.annotation.Nonnull;
 
 public class GravityCapability implements IGravityCapability {
+	public static final int UPDATE_AFTER_TICKS = 130;
 	private GravityDirection gravity = GravityDirection.UP_TO_DOWN_YN;
-	private Entity host;
+	private GravityDirection prevgravity = GravityDirection.UP_TO_DOWN_YN;
+	private final Entity host;
 	private boolean zero = false;
 	private boolean inverted = false;
 	private boolean isAttracted = false;
+	private double angle = 0;
+	private Vector3d eyePos = Vector3d.ZERO;
 	private BlockPos attractedPos = new BlockPos(0, 0, 0);
 	private int ticksLeft = 0;
 	
@@ -33,13 +38,13 @@ public class GravityCapability implements IGravityCapability {
 	public void tick() {
 		if (this.isAttracted) {
 			if (this.getTicks() % 40 == 0) {
+				if (host instanceof PlayerEntity) {
+					System.out.println("grav update: " + this.getAttracted());
+				}
 				TileEntity entity = host.level.getBlockEntity(new BlockPos(this.attractedPos.getX(), this.attractedPos.getY(), this.attractedPos.getZ()));
 				if (entity instanceof TileEntityGravityCore) {
 					TileEntityGravityCore tile = (TileEntityGravityCore) entity;
 					this.setGravityDir(tile.getCurrentGravity(host));
-					if (host instanceof PlayerEntity) {
-						System.out.println("grav update: "+this.getAttracted());
-					}
 				}
 			}
 		}
@@ -49,6 +54,7 @@ public class GravityCapability implements IGravityCapability {
 			this.setTicks(-1);
 			this.loseAttractedBy();
 		}
+		this.updateClients();
 	}
 	
 	@Override
@@ -59,26 +65,55 @@ public class GravityCapability implements IGravityCapability {
 	@Override
 	public void setTicks(int tick) {
 		this.ticksLeft = tick;
-		this.updateClients();
 	}
 	
 	@Override
 	public void changeTicks(int tick) {
 		this.setTicks(this.getTicks()+tick);
 	}
-	
+
+	@Override
+	public boolean hasTransitionAngle() {
+		return this.angle != 0 ? true : false;
+	}
+
+	@Override
+	public double getTransitionAngle() {
+		return this.angle;
+	}
+
+	@Override
+	public void setTransitionAngle(double a) {
+		this.angle = a;
+	}
+
+	@Override
+	public Vector3d getEyePos() {
+		return this.eyePos;
+	}
+
+	@Override
+	public void setEyePos(Vector3d vec) {
+		this.eyePos = vec;
+	}
+
 	@Override
 	public GravityDirection getGravityDir() {
 		return this.gravity;
 	}
 	
 	@Override
-	public void setGravityDir(GravityDirection grav) {
+	public void setGravityDir(@Nonnull GravityDirection grav) {
+		this.prevgravity = this.gravity;
 		this.gravity = grav;
-		this.updateClients();
 		this.updatePlayerModel();
 	}
-	
+
+	@Override
+	public GravityDirection getPreviousDir() {
+		return this.prevgravity;
+	}
+
 	@Override
 	public boolean getGravityZero() {
 		return this.zero;
@@ -87,7 +122,6 @@ public class GravityCapability implements IGravityCapability {
 	@Override
 	public void setGravityZero(boolean zer) {
 		this.zero = zer;
-		this.updateClients();
 	}
 	
 	@Override
@@ -98,7 +132,6 @@ public class GravityCapability implements IGravityCapability {
 	@Override
 	public void setGravityInverted(boolean inv) {
 		this.inverted = inv;
-		this.updateClients();
 	}
 	
 	@Override
@@ -109,7 +142,6 @@ public class GravityCapability implements IGravityCapability {
 	@Override
 	public void setAttracted(boolean att) {
 		this.isAttracted = att;
-		this.updateClients();
 	}
 	
 	@Override
@@ -127,9 +159,7 @@ public class GravityCapability implements IGravityCapability {
 	public boolean getAttractedBy(IAttractableTileEntity entity) {
 		if (entity instanceof TileEntity) {
 			TileEntity tile = (TileEntity) entity;
-			if (tile.getBlockPos().getX() == this.getAttractedPos().getX() && tile.getBlockPos().getY() == this.getAttractedPos().getY() && tile.getBlockPos().getZ() == this.getAttractedPos().getZ()) {
-				return true;
-			}
+			return tile.getBlockPos().getX() == this.getAttractedPos().getX() && tile.getBlockPos().getY() == this.getAttractedPos().getY() && tile.getBlockPos().getZ() == this.getAttractedPos().getZ();
 		}
 		return false;
 	}
@@ -150,9 +180,9 @@ public class GravityCapability implements IGravityCapability {
 	}
 	
 	private void updatePlayerModel() {
-		host.getBoundingBox();
+		//TODO
 	}
-	
+
 	public static GravityCapability getGravityProp(Entity entity) {
 		LazyOptional<IGravityCapability> gravity = entity.getCapability(GravityProvider.GRAVITY);
 		return (GravityCapability) gravity.orElseThrow(() -> new IllegalArgumentException("This should only be used on LivingEntities"));
@@ -169,17 +199,10 @@ public class GravityCapability implements IGravityCapability {
 	public PacketGravityCapability getPacket() {
 		return new PacketGravityCapability(gravity, host, zero, inverted, isAttracted, attractedPos, ticksLeft);
 	}
-	
-	@Deprecated
-	public void setTemporaryGravityDirection(GravityDirection paramGravityDirection, int paramInt) {}
-	@Deprecated
-	public void setTemporaryZeroGravity(int paramInt) {}
-	@Deprecated
-	public Vector3d getGravityFixedLook(float paramFloat1, float paramFloat2) { return new Vector3d(0, 0, 0); }
-	@Deprecated
-	public Vector3d getGravityFixedPlayerEyePoz(PlayerEntity paramEntityPlayer, float paramFloat) { return new Vector3d(0, 0, 0); }
-	@Deprecated
-	public void setGravityFixedPlayerShootVec(PlayerEntity paramEntityPlayer, Entity paramEntity, float paramFloat) {}
-	@Deprecated
-	public void setResistInOpaqueBlockDamegeTick(int paramInt) {}
+
+	//public void setTemporaryGravityDirection(GravityDirection paramGravityDirection, int paramInt) {}
+	//public void setTemporaryZeroGravity(int paramInt) {}
+	//public Vector3d getGravityFixedLook(float paramFloat1, float paramFloat2) { return new Vector3d(0, 0, 0); }
+	//public Vector3d getGravityFixedPlayerEyePoz(PlayerEntity paramEntityPlayer, float paramFloat) { return new Vector3d(0, 0, 0); }
+	//public void setResistInOpaqueBlockDamageTick(int paramInt) {}
 }

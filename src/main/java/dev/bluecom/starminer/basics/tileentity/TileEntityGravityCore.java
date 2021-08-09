@@ -1,8 +1,5 @@
 package dev.bluecom.starminer.basics.tileentity;
 
-import java.util.Iterator;
-import java.util.List;
-import javax.annotation.Nonnull;
 import dev.bluecom.starminer.api.GravityCapability;
 import dev.bluecom.starminer.api.GravityDirection;
 import dev.bluecom.starminer.api.IAttractableTileEntity;
@@ -37,14 +34,17 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
+import java.util.List;
+
 public class TileEntityGravityCore extends TileEntity implements ITickableTileEntity, IAttractableTileEntity {
-	private ItemStackHandler itemHandler = new ItemStackHandler(27) {
+	private final ItemStackHandler itemHandler = new ItemStackHandler(27) {
 		@Override
 		protected void onContentsChanged(int slot) {
 			setChanged();
 		}
 	};
-	private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+	private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
 
 	private int gravRad = 0;
 	private int starRad = 0;
@@ -95,11 +95,11 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 			case 1:
 				return new TranslationTextComponent("screen.starminer.cube");
 			case 2:
-				return new TranslationTextComponent("screen.starminer.xcyllinder");
+				return new TranslationTextComponent("screen.starminer.xcylinder");
 			case 3:
-				return new TranslationTextComponent("screen.starminer.ycyllinder");
+				return new TranslationTextComponent("screen.starminer.ycylinder");
 			case 4:
-				return new TranslationTextComponent("screen.starminer.zcyllinder");
+				return new TranslationTextComponent("screen.starminer.zcylinder");
 			default:
 				return new TranslationTextComponent("screen.starminer.notfound");
 		}
@@ -135,6 +135,7 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 		return starRad;
 	}
 	
+	@SuppressWarnings("SpellCheckingInspection")
 	public void setStarRadius(int srad) {
 		starRad = srad;
 		if (starRad < 0) {
@@ -242,23 +243,17 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 	}
 	
 	private void addEffectToPlayer() {
-		double centerX = worldPosition.getX() + 0.5D;
-		double centerY = worldPosition.getY() + 0.5D;
-		double centerZ = worldPosition.getZ() + 0.5D;
-		
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.unitCubeFromLowerCorner(new Vector3d(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ())).inflate(gravRad);
 		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, axisalignedbb);
-		Iterator<LivingEntity> iterator = list.iterator();
-		
-		while (iterator.hasNext()) {
-			LivingEntity entityG = iterator.next();
+
+		for (LivingEntity entityG : list) {
 			if (entityG instanceof AmbientEntity) { continue; }
 			if (entityG instanceof EnderDragonEntity) { continue; }
 			if (entityG instanceof WitherEntity) { continue; }
 			if (entityG.isSleeping()) { continue; }
-			
-			GravityCapability gravity = GravityCapability.getGravityProp(entityG);
-			if (inGravityRange((Entity) entityG, gravity, centerX, centerY, centerZ, gravRad, gType)) {
+
+			if (inGravityRange(entityG)) {
+				GravityCapability gravity = GravityCapability.getGravityProp(entityG);
 				if (!gravity.getAttracted()) {
 					gravity.setTicks(130);
 					gravity.setAttractedBy(this);
@@ -270,10 +265,14 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 			}
 		}
 	}
-	
-	private boolean inGravityRange(Entity entityG, GravityCapability gravity, double centerX, double centerY, double centerZ, int gravRan, int gTyp) {
-		double entityPosX, entityPosY, entityPosZ, dWidthHalf = (entityG.getBbWidth() / 2.0F);
+
+	@Override
+	public boolean inGravityRange(Entity entityG) {
+		GravityCapability gravity = GravityCapability.getGravityProp(entityG);
+		double entityPosX, entityPosY, entityPosZ;
+		double dWidthHalf = (entityG.getBbWidth() / 2.0F);
 		AxisAlignedBB bb = entityG.getBoundingBox();
+
 		switch (gravity.getGravityDir()) {
 			case DOWN_TO_UP_YP:
 				entityPosX = (bb.maxX + bb.minX) / 2.0D;
@@ -306,53 +305,47 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 				entityPosZ = (bb.maxZ + bb.minZ) / 2.0D;
 				break;
 		}
-		
+
+		double centerX = worldPosition.getX() + 0.5D;
+		double centerY = worldPosition.getY() + 0.5D;
+		double centerZ = worldPosition.getZ() + 0.5D;
+
+		double xRel = centerX - entityPosX;
+		double yRel = centerY - entityPosY;
+		double zRel = centerZ - entityPosZ;
+
 		switch (gType) {
 			case 1:
-				return checkAttractedRangeCube(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, gravRan);
+				return checkAttractedRangeCube(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, this.gravRad);
 			case 2:
-				return checkAttractedRangeXCyllinder(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, gravRan);
+				return checkAttractedRangeXCylinder(centerX, entityPosX, yRel, zRel, this.gravRad);
 			case 3:
-				return checkAttractedRangeYCyllinder(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, gravRan);
+				return checkAttractedRangeYCylinder(centerY, entityPosY, xRel, zRel, this.gravRad);
 			case 4:
-				return checkAttractedRangeZCyllinder(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, gravRan);
+				return checkAttractedRangeZCylinder(centerZ, entityPosZ, xRel, yRel, this.gravRad);
 			default:
-				return checkAttractedRangeSphere(centerX, centerY, centerZ, entityPosX, entityPosY, entityPosZ, gravRan);
+				return checkAttractedRangeSphere(xRel, yRel, zRel, this.gravRad);
 		}
 	}
 	
-	private static boolean checkAttractedRangeSphere(double centerX, double centerY, double centerZ, double entityX, double entityY, double entityZ, int grav) {
-		double xRel = centerX - entityX;
-		double yRel = centerY - entityY;
-	    double zRel = centerZ - entityZ;
-		return Math.sqrt(xRel*xRel+yRel*yRel+zRel+zRel) <= grav;
+	private static boolean checkAttractedRangeSphere(double xRel, double yRel, double zRel, int grav) {
+		return Math.sqrt(xRel*xRel+yRel*yRel+zRel*zRel) <= grav;
 	}
 	
 	private static boolean checkAttractedRangeCube(double centerX, double centerY, double centerZ, double entityX, double entityY, double entityZ, int grav) {
 		return (entityX <= centerX + grav && entityX >= centerX - grav && entityY <= centerY + grav && entityY >= centerY - grav && entityZ <= centerZ + grav && entityZ >= centerZ - grav);
 	}
 	
-	private static boolean checkAttractedRangeXCyllinder(double centerX, double centerY, double centerZ, double entityX, double entityY, double entityZ, int grav) {
-	    double zRel = centerZ - entityZ;
-	    double yRel = centerY - entityY;
+	private static boolean checkAttractedRangeXCylinder(double centerX, double entityX, double yRel, double zRel, int grav) {
 		return (entityX <= centerX + grav && entityX >= centerX - grav && Math.sqrt(yRel * yRel + zRel * zRel) <= grav);
 	}
 	
-	private static boolean checkAttractedRangeYCyllinder(double centerX, double centerY, double centerZ, double entityX, double entityY, double entityZ, int grav) {
-		double xRel = centerX - entityX;
-	    double zRel = centerZ - entityZ;
+	private static boolean checkAttractedRangeYCylinder(double centerY, double entityY, double xRel, double zRel, int grav) {
 		return (entityY <= centerY + grav && entityY >= centerY - grav && Math.sqrt(xRel * xRel + zRel * zRel) <= grav);
 	}
 	
-	private static boolean checkAttractedRangeZCyllinder(double centerX, double centerY, double centerZ, double entityX, double entityY, double entityZ, int grav) {
-		double xRel = centerX - entityX;
-	    double yRel = centerY - entityY;
+	private static boolean checkAttractedRangeZCylinder(double centerZ, double entityZ, double xRel, double yRel, int grav) {
 		return (entityZ <= centerZ + grav && entityZ >= centerZ - grav && Math.sqrt(xRel * xRel + yRel * yRel) <= grav);
-	}
-	
-	@Override
-	public boolean isStillInAttractedState(Entity entity) {
-		return inGravityRange(entity, GravityCapability.getGravityProp(entity), worldPosition.getX()+0.5D, worldPosition.getY()+0.5D, worldPosition.getZ()+0.5D, gravRad, gType);
 	}
 	
 	@Override
@@ -435,7 +428,7 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 			PlayerEntity player = (PlayerEntity) entity;
 			for (int i=0; i < 9; i++) {
 				ItemStack itemstack = player.inventory.items.get(i);
-				if (itemstack != null && itemstack.getItem() == CommonRegistryHandler.ITEM_GRAVITY_CONTROLLER.get()) {
+				if (itemstack.getItem() == CommonRegistryHandler.ITEM_GRAVITY_CONTROLLER.get()) {
 					ItemGravityController controller = (ItemGravityController) itemstack.getItem();
 					if (controller.gravstate == 1.0F) { 
 						return true; 

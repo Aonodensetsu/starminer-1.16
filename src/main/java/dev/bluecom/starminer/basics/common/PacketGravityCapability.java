@@ -2,6 +2,8 @@ package dev.bluecom.starminer.basics.common;
 
 import java.util.function.Supplier;
 import dev.bluecom.starminer.api.GravityDirection;
+import dev.bluecom.starminer.api.GravityProvider;
+import dev.bluecom.starminer.api.IGravityCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
@@ -9,13 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class PacketGravityCapability {
-	private GravityDirection gravity;
-	private Entity host;
-	private boolean zero;
-	private boolean inverted;
-	private boolean isAttracted;
-	private BlockPos attractedPos;
-	private int ticksLeft;
+	private final GravityDirection gravity;
+	private final Entity host;
+	private final boolean zero;
+	private final boolean inverted;
+	private final boolean isAttracted;
+	private final BlockPos attractedPos;
+	private final int ticksLeft;
 	
 	public PacketGravityCapability(GravityDirection g, Entity h, boolean z, boolean i, boolean a, BlockPos at, int t) {
 		this.gravity = g;
@@ -49,6 +51,17 @@ public class PacketGravityCapability {
 	}
 	
 	public boolean handle(Supplier<NetworkEvent.Context> ctx) {
+		ctx.get().enqueueWork(() -> {
+			IGravityCapability cap = this.host.getCapability(GravityProvider.GRAVITY).orElse(null);
+			if (cap != null) {
+				cap.setGravityDir(gravity);
+				cap.setGravityZero(zero);
+				cap.setGravityInverted(inverted);
+				cap.setAttractedPos(attractedPos);
+				cap.setAttracted(isAttracted);
+				cap.setTicks(ticksLeft);
+			}
+		});
 		return true;
 	}
 }

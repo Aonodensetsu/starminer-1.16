@@ -1,6 +1,5 @@
 package dev.bluecom.starminer.basics.common;
 
-import java.util.function.Supplier;
 import dev.bluecom.starminer.basics.ModContainer;
 import dev.bluecom.starminer.basics.block.BlockGravityCore;
 import dev.bluecom.starminer.basics.item.ItemGravityController;
@@ -26,12 +25,15 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 public class CommonRegistryHandler {
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ModContainer.MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ModContainer.MODID);
-	public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, ModContainer.MODID);
 	public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, ModContainer.MODID);
+	public static final DeferredRegister<TileEntityType<?>> TILES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, ModContainer.MODID);
 	public static RegistryKey<World> DIMENSION_ZERO_GRAVITY;
 
 	public static void init(IEventBus bus) {
@@ -49,7 +51,7 @@ public class CommonRegistryHandler {
 	
 	public static final ItemGroup STARMINER = new ItemGroup("starminer") {
 		@Override
-		public ItemStack makeIcon() { return new ItemStack(CommonRegistryHandler.BLOCK_GRAVITY_CORE.get()); }
+		public @NotNull ItemStack makeIcon() { return new ItemStack(CommonRegistryHandler.BLOCK_GRAVITY_CORE.get()); }
 	};
 	
 	public static final RegistryObject<Block> BLOCK_GRAVITY_CORE = blockRegister("gravity_core", BlockGravityCore::new);
@@ -75,7 +77,7 @@ public class CommonRegistryHandler {
 	));
 
 	public static final RegistryObject<Item> ITEM_GRAVITY_CONTROLLER = ITEMS.register("gravity_controller", ItemGravityController::new);
-	
+
 	public static final RegistryObject<TileEntityType<TileEntityGravityCore>> TILE_GRAVITY_CORE = TILES.register("gravity_core", () -> 
 		TileEntityType.Builder.of(TileEntityGravityCore::new, BLOCK_GRAVITY_CORE.get()).build(null)
 	);
