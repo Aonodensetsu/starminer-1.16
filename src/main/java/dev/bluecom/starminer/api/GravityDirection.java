@@ -1,8 +1,11 @@
 package dev.bluecom.starminer.api;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.entity.Pose;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
+import org.lwjgl.system.APIUtil;
 
 public enum GravityDirection {
 	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN),
@@ -69,6 +72,10 @@ public enum GravityDirection {
 			default:
 				return UP_TO_DOWN_YN;
 		} 
+	}
+
+	public GravityDirection turnWayForNormal() {
+		return GravityDirection.turnWayForNormal(this);
 	}
 
 	public Vector3d rotateVec3(Vector3d vec3) {
@@ -192,7 +199,7 @@ public enum GravityDirection {
 		return new Vector3d(d[0], d[1], d[2]);
 	}
 
-	private double[] adjustXYZValues(double x, double y, double z) {
+	public double[] adjustXYZValues(double x, double y, double z) {
 		switch (this) {
 			case DOWN_TO_UP_YP:
 				return new double[]{-x, -y, z};
@@ -236,6 +243,122 @@ public enum GravityDirection {
 		}
 		if (z != 0) {
 			GlStateManager._rotatef(z, 0, 0, 1);
+		}
+	}
+
+	public void postModifyPlayerOnGravityChange(PlayerEntity player, GravityDirection gravity, Vector3d eyes) {
+		gravity.returnCentreOfGravityToPlayerPos(player);
+		this.offsetCentreOfGravityFromPlayerPos(player);
+		this.setBoundingBoxAndPositionOnGravityChange(player, gravity, eyes);
+	}
+
+	private void setBoundingBoxAndPositionOnGravityChange(PlayerEntity player, GravityDirection oldGravity, Vector3d oldEyePos) {
+		AxisAlignedBB axisAlignedBB = this.getGravityAdjustedAABB(player);
+		player.resetPos();
+		if (!player.level.noCollision(axisAlignedBB)) {
+			GravityDirection directionToTry;
+			double distanceToMove;
+			if (player.getBbHeight() > player.getBbWidth()) {
+				distanceToMove = (player.getBbHeight() - player.getBbWidth())/2;
+				directionToTry = this;
+			} else if (player.getBbHeight() < player.getBbWidth()) {
+				distanceToMove = (player.getBbHeight() - player.getBbWidth())/2;
+				directionToTry = oldGravity;
+			} else {
+				player.setBoundingBox(axisAlignedBB);
+				return;
+			}
+			double[] adjustedMovement = directionToTry.adjustXYZValues(0, distanceToMove, 0);
+			adjustedMovement = this.turnWayForNormal().adjustXYZValues(adjustedMovement[0], adjustedMovement[1], adjustedMovement[2]);
+			AxisAlignedBB secondTry = axisAlignedBB.move(adjustedMovement[0], adjustedMovement[1], adjustedMovement[2]);
+			if (!player.level.noCollision(secondTry)) {
+				AxisAlignedBB thirdTry = axisAlignedBB.move(-adjustedMovement[0], -adjustedMovement[1], -adjustedMovement[2]);
+				if (!player.level.noCollision(thirdTry)) {
+					player.setBoundingBox(axisAlignedBB);
+					player.resetPos();
+					Vector3d newEyePos = player.position().add(0, player.getEyeHeight(), 0);
+					Vector3d eyesDifference = oldEyePos.subtract(newEyePos);
+					Vector3d adjustedDifference = this.turnWayForNormal().adjustLookVec(eyesDifference);
+					AxisAlignedBB givenUp = axisAlignedBB.move(adjustedDifference.x, adjustedDifference.y, adjustedDifference.z);
+					double relativeBottomOfBB = GravityAlignedBB.getRelativeBottom(givenUp);
+					long rounded = Math.round(relativeBottomOfBB);
+					double difference = rounded - relativeBottomOfBB;
+					givenUp = givenUp.move(0, difference + 1, 0);
+					if (player.level.noCollision(givenUp)) {
+						givenUp = givenUp.move(0, -1, 0);
+					}
+					axisAlignedBB = givenUp;
+				} else {
+					axisAlignedBB = thirdTry;
+				}
+			} else {
+				axisAlignedBB = secondTry;
+			}
+		}
+		player.setBoundingBox(axisAlignedBB);
+		player.resetPos();
+	}
+
+	private AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+		double widthOver2;
+		float eyeHeight;
+		switch (this) {
+			case DOWN_TO_UP_YP:
+				widthOver2 = player.getBbWidth() / 2f;
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - player.getBbHeight(), player.position().z - widthOver2, player.position().x + widthOver2, player.position().y, player.position().z + widthOver2);
+			case SOUTH_TO_NORTH_ZN:
+				widthOver2 = player.getBbWidth() / 2f;
+				eyeHeight = player.getEyeHeight(Pose.STANDING);
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - eyeHeight, player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + (player.getBbHeight() - eyeHeight));
+			case WEST_TO_EAST_XP:
+				widthOver2 = player.getBbWidth() / 2f;
+				eyeHeight = player.getEyeHeight(Pose.STANDING);
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - (player.getBbHeight() - eyeHeight), player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + eyeHeight, player.position().y + widthOver2, player.position().z + widthOver2);
+			case NORTH_TO_SOUTH_ZP:
+				widthOver2 = player.getBbWidth() / 2f;
+				eyeHeight = player.getEyeHeight(Pose.STANDING);
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - (player.getBbHeight() - eyeHeight), player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + eyeHeight);
+			case EAST_TO_WEST_XN:
+				widthOver2 = player.getBbWidth() / 2f;
+				eyeHeight = player.getEyeHeight(Pose.STANDING);
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - eyeHeight, player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + (player.getBbHeight() - eyeHeight), player.position().y + widthOver2, player.position().z + widthOver2);
+			default:
+				widthOver2 = player.getBbWidth() / 2f;
+				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y, player.position().z - widthOver2, player.position().x + widthOver2, player.position().y + player.getBbHeight(), player.position().z + widthOver2);
+		}
+	}
+
+	private void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+		switch (this) {
+			case DOWN_TO_UP_YP:
+				player.setPos(player.position().x, player.position().y+player.getBbHeight()/2, player.position().z);
+			case UP_TO_DOWN_YN:
+				player.setPos(player.position().x, player.position().y-player.getBbHeight()/2, player.position().z);
+			case SOUTH_TO_NORTH_ZN:
+				player.setPos(player.position().x, player.position().y, player.position().z+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
+			case WEST_TO_EAST_XP:
+				player.setPos(player.position().x-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
+			case EAST_TO_WEST_XN:
+				player.setPos(player.position().x+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
+			case NORTH_TO_SOUTH_ZP:
+				player.setPos(player.position().x, player.position().y, player.position().z-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
+		}
+	}
+
+	private void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+		switch (this) {
+			case DOWN_TO_UP_YP:
+				player.setPos(player.position().x, player.position().y-player.getBbHeight()/2, player.position().z);
+			case UP_TO_DOWN_YN:
+				player.setPos(player.position().x, player.position().y+player.getBbHeight()/2, player.position().z);
+			case SOUTH_TO_NORTH_ZN:
+				player.setPos(player.position().x, player.position().y, player.position().z-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
+			case WEST_TO_EAST_XP:
+				player.setPos(player.position().x+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
+			case EAST_TO_WEST_XN:
+				player.setPos(player.position().x-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
+			case NORTH_TO_SOUTH_ZP:
+				player.setPos(player.position().x, player.position().y, player.position().z+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
 		}
 	}
 }

@@ -104,9 +104,21 @@ public class GravityCapability implements IGravityCapability {
 	
 	@Override
 	public void setGravityDir(@Nonnull GravityDirection grav) {
-		this.prevgravity = this.gravity;
-		this.gravity = grav;
-		this.updatePlayerModel();
+		//if (host instanceof PlayerEntity) {
+		//	Vector3d oldEyePos = host.getPosition(1).add(0, host.getEyeHeight(), 0);
+		//	this.prevgravity = this.gravity;
+		//	this.gravity = grav;
+		//	this.gravity.postModifyPlayerOnGravityChange((PlayerEntity) host, this.prevgravity, oldEyePos);
+		//	if (host.level.isClientSide) {
+		//		Vector3d newEyePos = host.getPosition(1).add(0, host.getEyeHeight(), 0);
+		//		Vector3d eyesDiff = newEyePos.subtract(oldEyePos);
+		//		this.setEyePos(eyesDiff);
+		//	}
+		//} else {
+			this.prevgravity = this.gravity;
+			this.gravity = grav;
+			this.updatePlayerModel();
+		//}
 	}
 
 	@Override

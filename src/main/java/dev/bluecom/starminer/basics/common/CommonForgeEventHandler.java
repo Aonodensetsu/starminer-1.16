@@ -76,8 +76,8 @@ public class CommonForgeEventHandler {
 			double interpolatedPitch = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks());
 			double interpolatedYaw = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks());
 
-			interpolatedPitch %= 360;
-			interpolatedYaw %= 360;
+			interpolatedPitch = interpolatedPitch % 360;
+			interpolatedYaw = interpolatedYaw % 360;
 
 			Vector3d interpolatedLookVec = Vector3dHelper.getPreciseVectorForRotation(interpolatedPitch, interpolatedYaw);
 			Vector3d relativeInterpolatedLookVec = GravityDirection.turnWayForNormal(gravityDirection).adjustLookVec(interpolatedLookVec);
@@ -132,23 +132,26 @@ public class CommonForgeEventHandler {
 				minecraft.levelRenderer.needsUpdate();
 			}
 
-			relativeInterpolatedPitch %= 360;
-			relativeInterpolatedYaw %= 360;
+			relativeInterpolatedPitch = relativeInterpolatedPitch % 360;
+			relativeInterpolatedYaw = relativeInterpolatedYaw % 360;
 
-			event.getRenderer().getMainCamera().getEntity().getCapability(GravityProvider.GRAVITY).orElse(null);
-			GlStateManager._rotatef((float) relativeInterpolatedPitch, 1, 0, 0);
-			GlStateManager._rotatef((float) relativeInterpolatedYaw, 0, 1, 0);
+			//GlStateManager._rotatef((float) relativeInterpolatedPitch, 1, 0, 0);
+			//GlStateManager._rotatef((float) relativeInterpolatedYaw, 0, 1, 0);
 			gravityDirection.runCameraTransformation();
-			GlStateManager._rotatef((float) -interpolatedYaw, 0, 1, 0);
-			GlStateManager._rotatef((float) -interpolatedPitch, 1, 0, 0);
+			//GlStateManager._rotatef((float) -interpolatedYaw, 0, 1, 0);
+			//GlStateManager._rotatef((float) -interpolatedPitch, 1, 0, 0);
+
 			//event.setRoll(event.getRoll() + transitionRollAmount);
-			GlStateManager._rotatef(transitionRollAmount, 0, 0, 1);
+			//GlStateManager._rotatef(transitionRollAmount, 0, 0, 1);
+
 			//GlStateManager._rotatef(event.getRoll(), 0, 0, 1);
-			GlStateManager._rotatef(event.getPitch(), 1, 0, 0);
-			GlStateManager._rotatef(event.getYaw(), 0, 1, 0);
-			GlStateManager._translated(xTranslation, yTranslation, zTranslation);
-			GlStateManager._rotatef(-event.getYaw(), 0, 1, 0);
-			GlStateManager._rotatef(-event.getPitch(), 1, 0, 0);
+
+			//GlStateManager._rotatef(event.getPitch(), 1, 0, 0);
+			//GlStateManager._rotatef(event.getYaw(), 0, 1, 0);
+			//GlStateManager._translated(xTranslation, yTranslation, zTranslation);
+			//GlStateManager._rotatef(-event.getYaw(), 0, 1, 0);
+			//GlStateManager._rotatef(-event.getPitch(), 1, 0, 0);
+
 			//GlStateManager._rotatef(-event.getRoll(), 0, 0, 1);
 		}
 	}
