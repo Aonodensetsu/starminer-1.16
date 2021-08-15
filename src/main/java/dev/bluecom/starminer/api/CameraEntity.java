@@ -12,9 +12,9 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import java.util.UUID;
 
 public class CameraEntity extends Entity {
-    public static PlayerEntity host;
+    public PlayerEntity host;
     private UUID resolver;
-    private static PlayerEntity servhost;
+    private PlayerEntity servhost;
     private UUID servresolver;
 
     public CameraEntity(EntityType<?> type, World world) {
