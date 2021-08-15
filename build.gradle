@@ -145,7 +145,7 @@ dependencies {
 jar {
 	manifest {
 		attributes([
-			"Specification-Title": archivesBaseName,
+			"Specification-Title": "starminer",
 			"Specification-Vendor": "Aonodensetsu",
 			"Specification-Version": "1", // We are version 1 of ourselves
 			"Implementation-Title": "StarMiner",
