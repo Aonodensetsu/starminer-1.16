@@ -33,6 +33,7 @@ public class CommonForgeEventHandler {
 
 			PlayerEntity player = event.getPlayer();
 			CameraEntity cam = new CameraEntity(player);
+			cam.setPos(player.position().x, player.position().y, player.position().z);
 			player.level.addFreshEntity(cam);
 		}
 	}
