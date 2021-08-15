@@ -1,18 +1,13 @@
 package dev.bluecom.starminer.basics.common;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import dev.bluecom.starminer.api.GravityCapability;
-import dev.bluecom.starminer.api.GravityDirection;
-import dev.bluecom.starminer.api.GravityProvider;
-import dev.bluecom.starminer.api.IGravityCapability;
+import dev.bluecom.starminer.api.*;
 import dev.bluecom.starminer.basics.ModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -26,12 +21,19 @@ import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimension
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 public class CommonForgeEventHandler {
 	@SubscribeEvent
 	public void playerLogin(PlayerLoggedInEvent event) {
 		if (!event.getPlayer().level.isClientSide) {
 			CommonNetworkHandler.sendToClient(event.getPlayer().getCapability(GravityProvider.GRAVITY).orElseThrow(() -> new IllegalAccessError("Player should always have capability")).getPacket(), (ServerPlayerEntity) event.getPlayer());
+
+			PlayerEntity player = event.getPlayer();
+			CameraEntity cam = new CameraEntity(player);
+			player.level.addFreshEntity(cam);
 		}
 	}
 	
@@ -59,100 +61,140 @@ public class CommonForgeEventHandler {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	@SubscribeEvent
+	//@SubscribeEvent
 	public void cameraSetup(EntityViewRenderEvent.CameraSetup event) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Entity renderViewEntity = minecraft.getCameraEntity();
-		if (renderViewEntity instanceof PlayerEntity) {
-			PlayerEntity player = (PlayerEntity) renderViewEntity;
-			IGravityCapability capability = GravityCapability.getGravityProp(player);
-			GravityDirection gravityDirection = capability.getGravityDir();
+		Minecraft instance = Minecraft.getInstance();
+		if (instance.getCameraEntity() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			GravityCapability cap = GravityCapability.getGravityProp(player);
+			GravityDirection dir = cap.getGravityDir();
 
 			float transitionRollAmount = 0;
-			int timeoutTicks = capability.getTicks();
+			int timeoutTicks = cap.getTicks();
 			double effectiveTimeoutTicks = timeoutTicks - event.getRenderPartialTicks();
-
-			double interpolatedPitch = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks());
-			double interpolatedYaw = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks());
-
-			interpolatedPitch = interpolatedPitch % 360;
-			interpolatedYaw = interpolatedYaw % 360;
-
+			double interpolatedPitch = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks());
+			double interpolatedYaw = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks());
+			interpolatedPitch %= 360;
+			interpolatedYaw %= 360;
 			Vector3d interpolatedLookVec = Vector3dHelper.getPreciseVectorForRotation(interpolatedPitch, interpolatedYaw);
-			Vector3d relativeInterpolatedLookVec = GravityDirection.turnWayForNormal(gravityDirection).adjustLookVec(interpolatedLookVec);
-			double[] precisePitchAndYawFromVector = Vector3dHelper.getPrecisePitchAndYawFromVector(relativeInterpolatedLookVec);
-
-			double relativeInterpolatedPitch = precisePitchAndYawFromVector[Vector3dHelper.PITCH];
-			double relativeInterpolatedYaw = precisePitchAndYawFromVector[Vector3dHelper.YAW];
-
+			Vector3d relativeInterpolatedLookVec = dir.turnWayForNormal().adjustLookVec(interpolatedLookVec);
+			double[] relativeInterpolatedPitchAndYaw = Vector3dHelper.getPrecisePitchAndYawFromVector(relativeInterpolatedLookVec);
+			double relativeInterpolatedPitch = relativeInterpolatedPitchAndYaw[0];
+			double relativeInterpolatedYaw = relativeInterpolatedPitchAndYaw[1];
 			double xTranslation = 0;
 			double yTranslation = 0;
 			double zTranslation = 0;
 
 			if (timeoutTicks != 0 && effectiveTimeoutTicks > ConfigHandler.transitionAnimationRotationEnd) {
 				double rotationAngle;
-
-				if (!capability.hasTransitionAngle()) {
-					double yaw = player.xRot;
-					double pitch = player.yRot;
-
+				if (!cap.hasTransitionAngle()) {
+					double yaw = player.yRot;
+					double pitch = player.xRot;
 					Vector3d absoluteLookVec = Vector3dHelper.getPreciseVectorForRotation(pitch, yaw);
-					Vector3d relativeCurrentLookVector = GravityDirection.turnWayForNormal(gravityDirection).adjustLookVec(absoluteLookVec);
+					Vector3d relativeCurrentLookVector = dir.turnWayForNormal().adjustLookVec(absoluteLookVec);
 					double[] pitchAndYawRelativeCurrentLook = Vector3dHelper.getPrecisePitchAndYawFromVector(relativeCurrentLookVector);
-					double relativeCurrentPitch = pitchAndYawRelativeCurrentLook[Vector3dHelper.PITCH] - 90;
-					double relativeCurrentYaw = pitchAndYawRelativeCurrentLook[Vector3dHelper.YAW];
+					double relativeCurrentPitch = pitchAndYawRelativeCurrentLook[0] - 90;
+					double relativeCurrentYaw = pitchAndYawRelativeCurrentLook[1];
 					Vector3d relativeCurrentUpVector = Vector3dHelper.getPreciseVectorForRotation(relativeCurrentPitch, relativeCurrentYaw);
-					Vector3d absoluteCurrentUpVector = gravityDirection.adjustLookVec(relativeCurrentUpVector);
-					GravityDirection g = capability.getPreviousDir();
-					Vector3d relativePrevLookVector = GravityDirection.turnWayForNormal(g).adjustLookVec(absoluteLookVec);
+					Vector3d absoluteCurrentUpVector = dir.adjustLookVec(relativeCurrentUpVector);
+					Vector3d relativePrevLookVector = cap.getPreviousDir().turnWayForNormal().adjustLookVec(absoluteLookVec);
 					double[] pitchAndYawRelativePrevLook = Vector3dHelper.getPrecisePitchAndYawFromVector(relativePrevLookVector);
-					double relativePrevPitch = pitchAndYawRelativePrevLook[Vector3dHelper.PITCH] - 90;
-					double relativePrevYaw = pitchAndYawRelativePrevLook[Vector3dHelper.YAW];
+					double relativePrevPitch = pitchAndYawRelativePrevLook[0] - 90;
+					double relativePrevYaw = pitchAndYawRelativePrevLook[1];
 					Vector3d relativePrevUpVector = Vector3dHelper.getPreciseVectorForRotation(relativePrevPitch, relativePrevYaw);
-					Vector3d absolutePrevUpVector = capability.getPreviousDir().adjustLookVec(relativePrevUpVector);
-
+					Vector3d absolutePrevUpVector = cap.getPreviousDir().adjustLookVec(relativePrevUpVector);
 					rotationAngle = (180d / Math.PI) * Math.atan2(absoluteCurrentUpVector.cross(absolutePrevUpVector).dot(absoluteLookVec), absoluteCurrentUpVector.dot(absolutePrevUpVector));
-					capability.setTransitionAngle(rotationAngle);
+					cap.setTransitionAngle(rotationAngle);
+				} else {
+					rotationAngle = cap.getTransitionAngle();
 				}
-				else {
-					rotationAngle = capability.getTransitionAngle();
-				}
-
-				double numerator = GravityCapability.UPDATE_AFTER_TICKS - effectiveTimeoutTicks;
+				double numerator = GravityCapability.DEFAULT_TIMEOUT - effectiveTimeoutTicks;
 				double denominator = ConfigHandler.transitionAnimationRotationLength;
 				double multiplierZeroToOne = numerator / denominator;
 				double multiplierOneToZero = 1 - multiplierZeroToOne;
-
 				transitionRollAmount = (float)(rotationAngle * multiplierOneToZero);
-				Vector3d eyePosChangeVector = capability.getEyePos();
+				Vector3d eyePosChangeVector = cap.getEyePos();
 				xTranslation = eyePosChangeVector.x * multiplierOneToZero;
 				yTranslation = eyePosChangeVector.y * multiplierOneToZero;
 				zTranslation = eyePosChangeVector.z * multiplierOneToZero;
-				minecraft.levelRenderer.needsUpdate();
+				instance.levelRenderer.needsUpdate();
 			}
 
-			relativeInterpolatedPitch = relativeInterpolatedPitch % 360;
-			relativeInterpolatedYaw = relativeInterpolatedYaw % 360;
+			GL11.glRotated(relativeInterpolatedPitch, 1, 0, 0);
+			GL11.glRotated(relativeInterpolatedYaw, 0, 1, 0);
+			dir.runCameraTransformation();
+			GL11.glRotated(-interpolatedYaw, 0, 1, 0);
+			GL11.glRotated(-interpolatedPitch, 1, 0, 0);
+			GL11.glRotatef(transitionRollAmount, 0, 0, 1);
+			GL11.glRotatef(event.getPitch(), 1, 0, 0);
+			GL11.glRotatef(event.getYaw(), 0, 1, 0);
+			GL11.glTranslated(xTranslation, yTranslation, zTranslation);
+			GL11.glRotatef(-event.getYaw(), 0, 1, 0);
+			GL11.glRotatef(-event.getPitch(), 1, 0, 0);
+		}
+	}
 
-			//GlStateManager._rotatef((float) relativeInterpolatedPitch, 1, 0, 0);
-			//GlStateManager._rotatef((float) relativeInterpolatedYaw, 0, 1, 0);
-			gravityDirection.runCameraTransformation();
-			//GlStateManager._rotatef((float) -interpolatedYaw, 0, 1, 0);
-			//GlStateManager._rotatef((float) -interpolatedPitch, 1, 0, 0);
+	//@SubscribeEvent
+	public void cameraSetup2(EntityViewRenderEvent.CameraSetup event) {
+		Minecraft instance = Minecraft.getInstance();
+		if (instance.getCameraEntity() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			GravityCapability cap = GravityCapability.getGravityProp(player);
+			GravityDirection dir = cap.getGravityDir();
 
-			//event.setRoll(event.getRoll() + transitionRollAmount);
-			//GlStateManager._rotatef(transitionRollAmount, 0, 0, 1);
+			GL11.glRotatef(180.0F * dir.rotX, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef(180.0F * dir.rotZ, 0.0F, 0.0F, 1.0F);
 
-			//GlStateManager._rotatef(event.getRoll(), 0, 0, 1);
+			double pitch = player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks();
+			GL11.glRotatef((float) pitch * dir.pitchRotDirX, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef((float) pitch * dir.pitchRotDirY, 0.0F, 1.0F, 0.0F);
 
-			//GlStateManager._rotatef(event.getPitch(), 1, 0, 0);
-			//GlStateManager._rotatef(event.getYaw(), 0, 1, 0);
-			//GlStateManager._translated(xTranslation, yTranslation, zTranslation);
-			//GlStateManager._rotatef(-event.getYaw(), 0, 1, 0);
-			//GlStateManager._rotatef(-event.getPitch(), 1, 0, 0);
+			double yaw = player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks() + 180.0F;
+			GL11.glRotatef((float) yaw * dir.yawRotDirX, 1.0F, 0.0F, 0.0F);
+			GL11.glRotatef((float) yaw * dir.yawRotDirY, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef((float) yaw * dir.yawRotDirZ, 0.0F, 0.0F, 1.0F);
 
-			//GlStateManager._rotatef(-event.getRoll(), 0, 0, 1);
+			double fixHeight = player.yo - player.getBbWidth() / 2.0F;
+			GL11.glTranslatef((float) fixHeight * dir.shiftEyeX, (float) fixHeight * dir.shiftEyeY, (float) fixHeight * dir.shiftEyeZ);
+			GL11.glTranslatef((float) player.yo * dir.shiftSneakX, (float) player.yo * dir.shiftSneakY, (float) player.yo * dir.shiftSneakZ);
+		}
+	}
+
+	//@SubscribeEvent
+	public void cameraSetup3(EntityViewRenderEvent.CameraSetup event) {
+		Minecraft instance = Minecraft.getInstance();
+		if (instance.getCameraEntity() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			GravityCapability cap = GravityCapability.getGravityProp(player);
+			GravityDirection dir = cap.getGravityDir();
+
+			double pitch = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks()) % 360;
+			double yaw = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks()) % 360;
+			Vector3d relativeInterpolatedLookVec = dir.turnWayForNormal().adjustLookVec(player.getLookAngle());
+			double[] relativeInterpolatedPitchAndYaw = Vector3dHelper.getPrecisePitchAndYawFromVector(relativeInterpolatedLookVec);
+			GL11.glRotated(relativeInterpolatedPitchAndYaw[0], 1, 0, 0);
+			GL11.glRotated(relativeInterpolatedPitchAndYaw[1], 0, 1, 0);
+			dir.runCameraTransformation();
+			GL11.glRotated(-yaw, 0, 1, 0);
+			GL11.glRotated(-pitch, 1, 0, 0);
+		}
+	}
+
+	@SubscribeEvent
+	public void cameraSetup4(EntityViewRenderEvent.CameraSetup event) {
+		Minecraft instance = Minecraft.getInstance();
+		//if (instance.getCameraEntity() instanceof PlayerEntity) {
+			//PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			//List<CameraEntity> list = instance.level.getEntitiesOfClass(CameraEntity.class, player.getBoundingBox().inflate(2));
+			//System.out.println(list);
+			// bind camera entity
+		//}
+		if (instance.getCameraEntity() instanceof CameraEntity) {
+			System.out.println("it did attach");
+			//CameraEntity camera = (CameraEntity) instance.getCameraEntity();
+			//PlayerEntity player = camera.host;
+			//double pitch = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks()) % 360;
+			//double yaw = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks()) % 360;
 		}
 	}
 
@@ -173,29 +215,29 @@ public class CommonForgeEventHandler {
 	}
 	
 	//@SubscribeEvent
-	//public void renderLivingPre(final RenderLivingEvent.Pre<?, ?> event) {
-	//	if (event.getEntity() instanceof PlayerEntity) { //temporarily only overwrite player
-	//		IGravityCapability grav = GravityCapability.getGravityProp(event.getEntity());
-	//		if (grav.getAttracted()) {
-	//			MatrixStack matrix = event.getMatrixStack();
-	//			switch (grav.getGravityDir()) {
-	//				case DOWN_TO_UP_YP:
-	//					matrix.mulPose(Vector3f.XP.rotationDegrees(180));
-	//					break;
-	//				case EAST_TO_WEST_XN:
-	//					matrix.mulPose(Vector3f.ZP.rotationDegrees(-90));
-	//					break;
-	//				case WEST_TO_EAST_XP:
-	//					matrix.mulPose(Vector3f.ZP.rotationDegrees(90));
-	//					break;
-	//				case NORTH_TO_SOUTH_ZP:
-	//					matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
-	//					break;
-	//				case SOUTH_TO_NORTH_ZN:
-	//					matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-	//					break;
-	//			}
-	//		}
-	//	}
-	//}
+	public void renderLivingPre(final RenderLivingEvent.Pre<?, ?> event) {
+		if (event.getEntity() instanceof PlayerEntity) { //temporarily only overwrite player
+			IGravityCapability grav = GravityCapability.getGravityProp(event.getEntity());
+			if (grav.getAttracted()) {
+				MatrixStack matrix = event.getMatrixStack();
+				switch (grav.getGravityDir()) {
+					case DOWN_TO_UP_YP:
+						matrix.mulPose(Vector3f.XP.rotationDegrees(180));
+						break;
+					case EAST_TO_WEST_XN:
+						matrix.mulPose(Vector3f.ZP.rotationDegrees(-90));
+						break;
+					case WEST_TO_EAST_XP:
+						matrix.mulPose(Vector3f.ZP.rotationDegrees(90));
+						break;
+					case NORTH_TO_SOUTH_ZP:
+						matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
+						break;
+					case SOUTH_TO_NORTH_ZN:
+						matrix.mulPose(Vector3f.XP.rotationDegrees(90));
+						break;
+				}
+			}
+		}
+	}
 }

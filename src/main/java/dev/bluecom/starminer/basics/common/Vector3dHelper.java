@@ -7,8 +7,6 @@ public class Vector3dHelper {
     private static final double PI_OVER_180 = Math.PI / 180d;
     private static final double ONE_HUNDRED_EIGHTY_OVER_PI = 180d / Math.PI;
     private static final float ONE_HUNDRED_EIGHTY_OVER_PI_FLOAT = (float)(180d / Math.PI);
-    public static final int PITCH = 0;
-    public static final int YAW = 1;
 
     public static double getAbsolutePitchPrecise(Vector3d lookVec) {
         return -(Math.asin(lookVec.y) * (180D / Math.PI));

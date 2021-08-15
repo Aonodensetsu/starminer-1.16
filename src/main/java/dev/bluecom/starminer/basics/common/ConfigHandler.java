@@ -41,6 +41,6 @@ public class ConfigHandler extends Screen {
 
     // TODO list of options to be added
     public static double transitionAnimationRotationSpeed = 1.5; // from 1 to 1000
-    public static double transitionAnimationRotationLength = GravityCapability.UPDATE_AFTER_TICKS / transitionAnimationRotationSpeed;
-    public static double transitionAnimationRotationEnd = GravityCapability.UPDATE_AFTER_TICKS - transitionAnimationRotationLength;
+    public static double transitionAnimationRotationLength = GravityCapability.DEFAULT_TIMEOUT / transitionAnimationRotationSpeed;
+    public static double transitionAnimationRotationEnd = GravityCapability.DEFAULT_TIMEOUT - transitionAnimationRotationLength;
 }

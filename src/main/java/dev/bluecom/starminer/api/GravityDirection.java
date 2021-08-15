@@ -5,16 +5,207 @@ import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.APIUtil;
 
 public enum GravityDirection {
-	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN),
-	DOWN_TO_UP_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.MATRIX_ROT_DOWN_TO_UP_I, GravityConst.MATRIX_ROT_DOWN_TO_UP_D, GravityConst.FORGE_SIDE_ROT_DOWN_TO_UP),
-	EAST_TO_WEST_XN(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.5F, -1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_EAST_TO_WEST_I, GravityConst.MATRIX_ROT_EAST_TO_WEST_D, GravityConst.FORGE_SIDE_ROT_EAST_TO_WEST),
-	WEST_TO_EAST_XP(0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F, -0.5F, 1.0F, 1.0F, 0.0F, -1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_WEST_TO_EAST_I, GravityConst.MATRIX_ROT_WEST_TO_EAST_D, GravityConst.FORGE_SIDE_ROT_WEST_TO_EAST),
-	NORTH_TO_SOUTH_ZP(1.0F, 0.0F, 0.0F, 0.0F, -1.0F, 0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, -1.0F, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_I, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_D, GravityConst.FORGE_SIDE_ROT_NORTH_TO_SOUTH),
-	SOUTH_TO_NORTH_ZN(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, -0.5F, 0.0F, 0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 1.0F, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_I, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_D, GravityConst.FORGE_SIDE_ROT_SOUTH_TO_NORTH);
-		
+	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return UP_TO_DOWN_YN;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{x, y, z};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(0, 0, 0);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y, player.position().z - widthOver2, player.position().x + widthOver2, player.position().y + player.getBbHeight(), player.position().z + widthOver2);
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(0,-player.getBbHeight()/2, 0);
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(0, player.getBbHeight()/2,0);
+		}
+	},
+	DOWN_TO_UP_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.MATRIX_ROT_DOWN_TO_UP_I, GravityConst.MATRIX_ROT_DOWN_TO_UP_D, GravityConst.FORGE_SIDE_ROT_DOWN_TO_UP) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return DOWN_TO_UP_YP;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{-x, -y, z};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(0, 0, 180);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - player.getBbHeight(), player.position().z - widthOver2, player.position().x + widthOver2, player.position().y, player.position().z + widthOver2);
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(0, player.getBbHeight()/2, 0);
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(0, -player.getBbHeight()/2, 0);
+		}
+	},
+	EAST_TO_WEST_XN(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.5F, -1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_EAST_TO_WEST_I, GravityConst.MATRIX_ROT_EAST_TO_WEST_D, GravityConst.FORGE_SIDE_ROT_EAST_TO_WEST) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return WEST_TO_EAST_XP;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{y, -x, z};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(0, 0, -90);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			float eyeHeight = player.getEyeHeight(Pose.STANDING);
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - eyeHeight, player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + (player.getBbHeight() - eyeHeight), player.position().y + widthOver2, player.position().z + widthOver2);
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2, 0, 0);
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), 0, 0);
+		}
+	},
+	WEST_TO_EAST_XP(0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F, -0.5F, 1.0F, 1.0F, 0.0F, -1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_WEST_TO_EAST_I, GravityConst.MATRIX_ROT_WEST_TO_EAST_D, GravityConst.FORGE_SIDE_ROT_WEST_TO_EAST) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return EAST_TO_WEST_XN;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{-y, x, z};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(0, 0, 90);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			float eyeHeight = player.getEyeHeight(Pose.STANDING);
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - (player.getBbHeight() - eyeHeight), player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + eyeHeight, player.position().y + widthOver2, player.position().z + widthOver2);
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), 0, 0);
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2, 0, 0);
+		}
+	},
+	NORTH_TO_SOUTH_ZP(1.0F, 0.0F, 0.0F, 0.0F, -1.0F, 0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, -1.0F, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_I, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_D, GravityConst.FORGE_SIDE_ROT_NORTH_TO_SOUTH) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return SOUTH_TO_NORTH_ZN;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{x, z, -y};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(-90, 0, 0);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			float eyeHeight = player.getEyeHeight(Pose.STANDING);
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - (player.getBbHeight() - eyeHeight), player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + eyeHeight);
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(0, 0, -(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(0, 0, player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2);
+		}
+	},
+	SOUTH_TO_NORTH_ZN(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, -0.5F, 0.0F, 0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 1.0F, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_I, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_D, GravityConst.FORGE_SIDE_ROT_SOUTH_TO_NORTH) {
+		@Override
+		public GravityDirection turnWayForNormal() {
+			return NORTH_TO_SOUTH_ZP;
+		}
+
+		@Override
+		public double[] adjustXYZValues(double x, double y, double z) {
+			return new double[]{x, -z, y};
+		}
+
+		@Override
+		public void runCameraTransformation() {
+			GravityDirection.runCameraTransformation(90, 0, 0);
+		}
+
+		@Override
+		AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
+			double widthOver2 = player.getBbWidth() / 2f;
+			float eyeHeight = player.getEyeHeight(Pose.STANDING);
+			return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - eyeHeight, player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + (player.getBbHeight() - eyeHeight));
+		}
+
+		@Override
+		public void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
+			player.position().add(0, 0, player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2);
+		}
+
+		@Override
+		public void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
+			player.position().add(0, 0, -(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
+		}
+	};
+
 	public float pitchRotDirX;
 	public float pitchRotDirY;
 	public float yawRotDirX;
@@ -57,25 +248,10 @@ public enum GravityDirection {
 		this.collideCheckExpandZ = -this.matrixRotationI[5];
 	}
 
-	public static GravityDirection turnWayForNormal(GravityDirection gDir) {
-		switch (gDir) {
-			case DOWN_TO_UP_YP:
-				return DOWN_TO_UP_YP;
-			case EAST_TO_WEST_XN:
-				return WEST_TO_EAST_XP;
-			case WEST_TO_EAST_XP:
-				return EAST_TO_WEST_XN;
-			case NORTH_TO_SOUTH_ZP:
-				return SOUTH_TO_NORTH_ZN;
-			case SOUTH_TO_NORTH_ZN:
-				return NORTH_TO_SOUTH_ZP;
-			default:
-				return UP_TO_DOWN_YN;
-		} 
-	}
+	public abstract GravityDirection turnWayForNormal();
 
-	public GravityDirection turnWayForNormal() {
-		return GravityDirection.turnWayForNormal(this);
+	public static GravityDirection turnWayForNormal(GravityDirection g) {
+		return g.turnWayForNormal();
 	}
 
 	public Vector3d rotateVec3(Vector3d vec3) {
@@ -165,24 +341,24 @@ public enum GravityDirection {
 	public static AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, int x, int y, int z) {
 		return rotateAABBAt(dir, aabb, x + 0.5D, y + 0.5D, z + 0.5D);
 	}
-	public AxisAlignedBB rotateAABBAt(AxisAlignedBB aabb, double roatCenterX, double roatCenterY, double roatCenterZ) {
-		return rotateAABBAt(this, aabb, roatCenterX, roatCenterY, roatCenterZ);
+	public AxisAlignedBB rotateAABBAt(AxisAlignedBB aabb, double rotCenterX, double rotCenterY, double rotCenterZ) {
+		return rotateAABBAt(this, aabb, rotCenterX, rotCenterY, rotCenterZ);
 	}
 	
-	public static AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, double roatCenterX, double roatCenterY, double roatCenterZ) {
-		double aabbminX = aabb.minX - roatCenterX;
-		double aabbminY = aabb.minY - roatCenterY;
-		double aabbminZ = aabb.minZ - roatCenterZ;
-		double aabbmaxX = aabb.maxX - roatCenterX;
-		double aabbmaxY = aabb.maxY - roatCenterY;
-		double aabbmaxZ = aabb.maxZ - roatCenterZ;
+	public static AxisAlignedBB rotateAABBAt(GravityDirection dir, AxisAlignedBB aabb, double rotCenterX, double rotCenterY, double rotCenterZ) {
+		double aabbminX = aabb.minX - rotCenterX;
+		double aabbminY = aabb.minY - rotCenterY;
+		double aabbminZ = aabb.minZ - rotCenterZ;
+		double aabbmaxX = aabb.maxX - rotCenterX;
+		double aabbmaxY = aabb.maxY - rotCenterY;
+		double aabbmaxZ = aabb.maxZ - rotCenterZ;
 		
-		double x1 = aabbminX * dir.matrixRotationD[0] + aabbminY * dir.matrixRotationD[3] + aabbminZ * dir.matrixRotationD[6] + roatCenterX;
-		double y1 = aabbminX * dir.matrixRotationD[1] + aabbminY * dir.matrixRotationD[4] + aabbminZ * dir.matrixRotationD[7] + roatCenterY;
-		double z1 = aabbminX * dir.matrixRotationD[2] + aabbminY * dir.matrixRotationD[5] + aabbminZ * dir.matrixRotationD[8] + roatCenterZ;
-		double x2 = aabbmaxX * dir.matrixRotationD[0] + aabbmaxY * dir.matrixRotationD[3] + aabbmaxZ * dir.matrixRotationD[6] + roatCenterX;
-		double y2 = aabbmaxX * dir.matrixRotationD[1] + aabbmaxY * dir.matrixRotationD[4] + aabbmaxZ * dir.matrixRotationD[7] + roatCenterY;
-		double z2 = aabbmaxX * dir.matrixRotationD[2] + aabbmaxY * dir.matrixRotationD[5] + aabbmaxZ * dir.matrixRotationD[8] + roatCenterZ;
+		double x1 = aabbminX * dir.matrixRotationD[0] + aabbminY * dir.matrixRotationD[3] + aabbminZ * dir.matrixRotationD[6] + rotCenterX;
+		double y1 = aabbminX * dir.matrixRotationD[1] + aabbminY * dir.matrixRotationD[4] + aabbminZ * dir.matrixRotationD[7] + rotCenterY;
+		double z1 = aabbminX * dir.matrixRotationD[2] + aabbminY * dir.matrixRotationD[5] + aabbminZ * dir.matrixRotationD[8] + rotCenterZ;
+		double x2 = aabbmaxX * dir.matrixRotationD[0] + aabbmaxY * dir.matrixRotationD[3] + aabbmaxZ * dir.matrixRotationD[6] + rotCenterX;
+		double y2 = aabbmaxX * dir.matrixRotationD[1] + aabbmaxY * dir.matrixRotationD[4] + aabbmaxZ * dir.matrixRotationD[7] + rotCenterY;
+		double z2 = aabbmaxX * dir.matrixRotationD[2] + aabbmaxY * dir.matrixRotationD[5] + aabbmaxZ * dir.matrixRotationD[8] + rotCenterZ;
 
 		return new AxisAlignedBB(
 			Math.max(x1, x2),
@@ -199,50 +375,29 @@ public enum GravityDirection {
 		return new Vector3d(d[0], d[1], d[2]);
 	}
 
-	public double[] adjustXYZValues(double x, double y, double z) {
-		switch (this) {
-			case DOWN_TO_UP_YP:
-				return new double[]{-x, -y, z};
-			case EAST_TO_WEST_XN:
-				return new double[]{y, -x, z};
-			case WEST_TO_EAST_XP:
-				return new double[]{-y, x, z};
-			case NORTH_TO_SOUTH_ZP:
-				return new double[]{x, z, -y};
-			case SOUTH_TO_NORTH_ZN:
-				return new double[]{x, -z, y};
-			default:
-				return new double[]{x, y, z};
-		}
+	public abstract double[] adjustXYZValues(double x, double y, double z);
+
+	public static double[] adjustXYZValues(GravityDirection g, double x, double y, double z) {
+		return g.adjustXYZValues(x, y, z);
 	}
 
-	public void runCameraTransformation() {
-		int x = 0, y = 0, z = 0;
-		switch (this) {
-			case DOWN_TO_UP_YP:
-				z = 180;
-				break;
-			case SOUTH_TO_NORTH_ZN:
-				x = 90;
-				break;
-			case WEST_TO_EAST_XP:
-				z = 90;
-				break;
-			case NORTH_TO_SOUTH_ZP:
-				x = -90;
-				break;
-			case EAST_TO_WEST_XN:
-				z = -90;
-				break;
-		}
+	public double[] adjustXYZValuesMaintainSigns(double x, double y, double z) {
+		double[] values = this.adjustXYZValues(x, y, z);
+		double[] signs = this.adjustXYZValues(1, 1, 1);
+		return new double[]{values[0] * signs[0], values[1] * signs[1], values[2] * signs[2]};
+	}
+
+	public abstract void runCameraTransformation();
+
+	public static void runCameraTransformation(int x, int y, int z) {
 		if (x != 0) {
-			GlStateManager._rotatef(x, 1, 0, 0);
+			GL11.glRotatef(x, 1, 0, 0);
 		}
 		if (y != 0) {
-			GlStateManager._rotatef(y, 0, 1, 0);
+			GL11.glRotatef(y, 0, 1, 0);
 		}
 		if (z != 0) {
-			GlStateManager._rotatef(z, 0, 0, 1);
+			GL11.glRotatef(z, 0, 0, 1);
 		}
 	}
 
@@ -299,66 +454,21 @@ public enum GravityDirection {
 		player.resetPos();
 	}
 
-	private AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player) {
-		double widthOver2;
-		float eyeHeight;
-		switch (this) {
-			case DOWN_TO_UP_YP:
-				widthOver2 = player.getBbWidth() / 2f;
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - player.getBbHeight(), player.position().z - widthOver2, player.position().x + widthOver2, player.position().y, player.position().z + widthOver2);
-			case SOUTH_TO_NORTH_ZN:
-				widthOver2 = player.getBbWidth() / 2f;
-				eyeHeight = player.getEyeHeight(Pose.STANDING);
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - eyeHeight, player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + (player.getBbHeight() - eyeHeight));
-			case WEST_TO_EAST_XP:
-				widthOver2 = player.getBbWidth() / 2f;
-				eyeHeight = player.getEyeHeight(Pose.STANDING);
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - (player.getBbHeight() - eyeHeight), player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + eyeHeight, player.position().y + widthOver2, player.position().z + widthOver2);
-			case NORTH_TO_SOUTH_ZP:
-				widthOver2 = player.getBbWidth() / 2f;
-				eyeHeight = player.getEyeHeight(Pose.STANDING);
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y - widthOver2, player.position().z - (player.getBbHeight() - eyeHeight), player.position().x + widthOver2, player.position().y + widthOver2, player.position().z + eyeHeight);
-			case EAST_TO_WEST_XN:
-				widthOver2 = player.getBbWidth() / 2f;
-				eyeHeight = player.getEyeHeight(Pose.STANDING);
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - eyeHeight, player.position().y - widthOver2, player.position().z - widthOver2, player.position().x + (player.getBbHeight() - eyeHeight), player.position().y + widthOver2, player.position().z + widthOver2);
-			default:
-				widthOver2 = player.getBbWidth() / 2f;
-				return new GravityAlignedBB(GravityCapability.getGravityProp(player).getGravityDir(), player.position().x - widthOver2, player.position().y, player.position().z - widthOver2, player.position().x + widthOver2, player.position().y + player.getBbHeight(), player.position().z + widthOver2);
-		}
+	abstract AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player);
+
+	private static AxisAlignedBB getGravityAdjustedAABB(PlayerEntity player, GravityDirection g) {
+		return g.getGravityAdjustedAABB(player);
 	}
 
-	private void offsetCentreOfGravityFromPlayerPos(PlayerEntity player) {
-		switch (this) {
-			case DOWN_TO_UP_YP:
-				player.setPos(player.position().x, player.position().y+player.getBbHeight()/2, player.position().z);
-			case UP_TO_DOWN_YN:
-				player.setPos(player.position().x, player.position().y-player.getBbHeight()/2, player.position().z);
-			case SOUTH_TO_NORTH_ZN:
-				player.setPos(player.position().x, player.position().y, player.position().z+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
-			case WEST_TO_EAST_XP:
-				player.setPos(player.position().x-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
-			case EAST_TO_WEST_XN:
-				player.setPos(player.position().x+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
-			case NORTH_TO_SOUTH_ZP:
-				player.setPos(player.position().x, player.position().y, player.position().z-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
-		}
+	public abstract void offsetCentreOfGravityFromPlayerPos(PlayerEntity player);
+
+	private static void offsetCentreOfGravityFromPlayerPos(PlayerEntity player, GravityDirection g) {
+		g.offsetCentreOfGravityFromPlayerPos(player);
 	}
 
-	private void returnCentreOfGravityToPlayerPos(PlayerEntity player) {
-		switch (this) {
-			case DOWN_TO_UP_YP:
-				player.setPos(player.position().x, player.position().y-player.getBbHeight()/2, player.position().z);
-			case UP_TO_DOWN_YN:
-				player.setPos(player.position().x, player.position().y+player.getBbHeight()/2, player.position().z);
-			case SOUTH_TO_NORTH_ZN:
-				player.setPos(player.position().x, player.position().y, player.position().z-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
-			case WEST_TO_EAST_XP:
-				player.setPos(player.position().x+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
-			case EAST_TO_WEST_XN:
-				player.setPos(player.position().x-(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2), player.position().y, player.position().z);
-			case NORTH_TO_SOUTH_ZP:
-				player.setPos(player.position().x, player.position().y, player.position().z+(player.getEyeHeight(Pose.STANDING)-player.getBbHeight()/2));
-		}
+	public abstract void returnCentreOfGravityToPlayerPos(PlayerEntity player);
+
+	private static void returnCentreOfGravityToPlayerPos(PlayerEntity player, GravityDirection g) {
+		g.returnCentreOfGravityToPlayerPos(player);
 	}
 }

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nonnull;
 
 public class GravityCapability implements IGravityCapability {
-	public static final int UPDATE_AFTER_TICKS = 130;
+	public static final int DEFAULT_TIMEOUT = 130;
 	private GravityDirection gravity = GravityDirection.UP_TO_DOWN_YN;
 	private GravityDirection prevgravity = GravityDirection.UP_TO_DOWN_YN;
 	private final Entity host;
