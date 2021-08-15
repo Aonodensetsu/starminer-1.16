@@ -6,14 +6,16 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
-
 import java.util.UUID;
 
-public class CameraEntity extends Entity {
+public class CameraEntity extends Entity implements IEntityAdditionalSpawnData {
     public PlayerEntity host;
     private UUID resolver;
+    private int resolver2;
     private PlayerEntity servhost;
 
     public CameraEntity(EntityType<?> type, World world) {
@@ -32,27 +34,29 @@ public class CameraEntity extends Entity {
             if (host == null) {
                 if (resolver == null) { System.out.println("uuid empty, camera killed"); this.kill(); return; }
                 this.host = this.level.getPlayerByUUID(resolver);
-                System.out.println("made the host "+this.level.getPlayerByUUID(resolver));
             }
         }
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT nbt) {
-        if (nbt.hasUUID("hostplayer")) {
-            this.resolver = nbt.getUUID("hostplayer");
-        } else {
-            this.resolver = null;
-        }
+    public void writeSpawnData(PacketBuffer buffer) {
+        buffer.writeUUID(servhost.getUUID());
+        buffer.writeInt(servhost.getId());
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT nbt) {
-        if (servhost != null) {
-            nbt.putUUID("hostplayer", servhost.getUUID());
-        }
+    public void readSpawnData(PacketBuffer buffer) {
+        this.resolver = buffer.readUUID();
+        this.resolver2 = buffer.readInt();
     }
 
+    @Override
+    public boolean save(CompoundNBT nbt) {
+        return false;
+    }
+
+    @Override protected void readAdditionalSaveData(CompoundNBT nbt) {}
+    @Override protected void addAdditionalSaveData(CompoundNBT nbt) {}
     @Override protected void defineSynchedData() {}
     @Override public IPacket<?> getAddEntityPacket() { return NetworkHooks.getEntitySpawningPacket(this); }
 }
