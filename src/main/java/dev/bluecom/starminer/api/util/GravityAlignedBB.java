@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.api;
+package dev.bluecom.starminer.api.util;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

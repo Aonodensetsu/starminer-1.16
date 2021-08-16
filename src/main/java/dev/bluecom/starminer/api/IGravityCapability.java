@@ -1,6 +1,7 @@
 package dev.bluecom.starminer.api;
 
-import dev.bluecom.starminer.basics.common.PacketGravityCapability;
+import dev.bluecom.starminer.api.util.GravityDirection;
+import dev.bluecom.starminer.basics.network.PacketGravityCapability;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import org.jetbrains.annotations.NotNull;

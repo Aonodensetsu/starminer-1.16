@@ -1,7 +1,7 @@
 package dev.bluecom.starminer.basics.block;
 
-import dev.bluecom.starminer.basics.tileentity.ContainerGravityCore;
-import dev.bluecom.starminer.basics.tileentity.TileEntityGravityCore;
+import dev.bluecom.starminer.basics.containers.ContainerGravityCore;
+import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.api;
+package dev.bluecom.starminer.api.util;
 
 class GravityConst {
 	public static final int[] MATRIX_ROT_UP_TO_DOWN_I = new int[] { 1, 0, 0, 0, 1, 0, 0, 0, 1 };

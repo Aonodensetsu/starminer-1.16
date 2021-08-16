@@ -1,11 +1,11 @@
 package dev.bluecom.starminer.basics.common;
 
-import dev.bluecom.starminer.api.CameraEntity;
+import dev.bluecom.starminer.api.camera.CameraEntity;
 import dev.bluecom.starminer.basics.ModContainer;
 import dev.bluecom.starminer.basics.block.BlockGravityCore;
-import dev.bluecom.starminer.basics.item.ItemGravityController;
-import dev.bluecom.starminer.basics.tileentity.ContainerGravityCore;
-import dev.bluecom.starminer.basics.tileentity.TileEntityGravityCore;
+import dev.bluecom.starminer.basics.containers.ContainerGravityCore;
+import dev.bluecom.starminer.basics.items.ItemGravityController;
+import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.GlassBlock;
@@ -88,7 +88,7 @@ public class CommonRegistryHandler {
 		TileEntityType.Builder.of(TileEntityGravityCore::new, BLOCK_GRAVITY_CORE.get()).build(null)
 	);
 
-	public static final RegistryObject<ContainerType<ContainerGravityCore>> CONTAINER_GRAVITY_CORE = CONTAINERS.register("gravity_core", () -> 
+	public static final RegistryObject<ContainerType<ContainerGravityCore>> CONTAINER_GRAVITY_CORE = CONTAINERS.register("gravity_core", () ->
 		IForgeContainerType.create((windowId, inv, data) -> {
 			BlockPos pos = data.readBlockPos();
 			World world = inv.player.level;

@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.basics.common;
+package dev.bluecom.starminer.api.util;
 
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;

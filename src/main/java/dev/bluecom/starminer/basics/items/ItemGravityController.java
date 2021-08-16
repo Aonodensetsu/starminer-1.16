@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.basics.item;
+package dev.bluecom.starminer.basics.items;
 
 import dev.bluecom.starminer.api.GravityCapability;
 import dev.bluecom.starminer.api.GravityProvider;

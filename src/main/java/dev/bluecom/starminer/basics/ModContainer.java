@@ -1,13 +1,13 @@
 package dev.bluecom.starminer.basics;
 
-import dev.bluecom.starminer.api.CameraEntityRenderer;
 import dev.bluecom.starminer.api.GravityProvider;
+import dev.bluecom.starminer.api.camera.CameraEntity;
+import dev.bluecom.starminer.basics.common.CommonConfigHandler;
 import dev.bluecom.starminer.basics.common.CommonForgeEventHandler;
-import dev.bluecom.starminer.basics.common.CommonNetworkHandler;
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
-import dev.bluecom.starminer.basics.common.ConfigHandler;
-import dev.bluecom.starminer.basics.item.ItemGravityController;
-import dev.bluecom.starminer.basics.tileentity.ScreenGravityCore;
+import dev.bluecom.starminer.basics.items.ItemGravityController;
+import dev.bluecom.starminer.basics.network.CommonNetworkHandler;
+import dev.bluecom.starminer.basics.screens.ScreenGravityCore;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -36,7 +36,7 @@ public class ModContainer {
 		bus.addListener(this::setup);
 		bus.addListener(this::postcomms);
 		CommonRegistryHandler.init(bus);
-		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> new ConfigHandler());
+		ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (mc, screen) -> new CommonConfigHandler());
 	}
 	
 	private void setup(final FMLCommonSetupEvent event) {
@@ -47,7 +47,7 @@ public class ModContainer {
 	}
 
 	private void postcomms(FMLClientSetupEvent event) {
-		RenderingRegistry.registerEntityRenderingHandler(CommonRegistryHandler.CAMERA_ENTITY.get(), CameraEntityRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(CommonRegistryHandler.CAMERA_ENTITY.get(), CameraEntity.Renderer::new);
 		event.enqueueWork(() -> {
 			RenderTypeLookup.setRenderLayer(CommonRegistryHandler.BLOCK_INNER_CORE.get(), RenderType.translucent());
 			ItemModelsProperties.register(

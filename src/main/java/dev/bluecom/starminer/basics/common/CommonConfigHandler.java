@@ -9,7 +9,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class ConfigHandler extends Screen {
+public class CommonConfigHandler extends Screen {
     private static final int TITLE_Y = 8;
     private static final int OPTIONS_TOP_Y = 24;
     private static final int OPTIONS_BOTTOM_Y = 32;
@@ -28,7 +28,7 @@ public class ConfigHandler extends Screen {
         this.addButton(new Button((this.width-BUTTON_WIDTH)/2, this.height-DONE_BUTTON_TOP_OFFSET, BUTTON_WIDTH, BUTTON_HEIGHT, new StringTextComponent(I18n.get("gui.done")), button -> this.onClose()));
     }
 
-    public ConfigHandler() {
+    public CommonConfigHandler() {
         super(new TranslationTextComponent("screen.starminer.config"));
     }
 

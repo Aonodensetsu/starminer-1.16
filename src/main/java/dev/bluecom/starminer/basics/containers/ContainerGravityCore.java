@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.basics.tileentity;
+package dev.bluecom.starminer.basics.containers;
 
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
 import net.minecraft.entity.player.PlayerEntity;

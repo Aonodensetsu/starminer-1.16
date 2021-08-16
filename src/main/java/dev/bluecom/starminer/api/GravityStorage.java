@@ -1,6 +1,8 @@
 package dev.bluecom.starminer.api;
 
 import javax.annotation.Nullable;
+
+import dev.bluecom.starminer.api.util.GravityDirection;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;

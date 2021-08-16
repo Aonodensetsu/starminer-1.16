@@ -1,12 +1,11 @@
-package dev.bluecom.starminer.api;
+package dev.bluecom.starminer.api.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import dev.bluecom.starminer.api.GravityCapability;
 import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.APIUtil;
 
 public enum GravityDirection {
 	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN) {

@@ -1,8 +1,9 @@
 package dev.bluecom.starminer.api;
 
-import dev.bluecom.starminer.basics.common.CommonNetworkHandler;
-import dev.bluecom.starminer.basics.common.PacketGravityCapability;
-import dev.bluecom.starminer.basics.tileentity.TileEntityGravityCore;
+import dev.bluecom.starminer.api.util.GravityDirection;
+import dev.bluecom.starminer.basics.network.CommonNetworkHandler;
+import dev.bluecom.starminer.basics.network.PacketGravityCapability;
+import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
+
 import javax.annotation.Nonnull;
 
 public class GravityCapability implements IGravityCapability {

@@ -1,8 +1,13 @@
 package dev.bluecom.starminer.basics.common;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import dev.bluecom.starminer.api.*;
+import dev.bluecom.starminer.api.GravityCapability;
+import dev.bluecom.starminer.api.GravityProvider;
+import dev.bluecom.starminer.api.IGravityCapability;
+import dev.bluecom.starminer.api.camera.CameraEntity;
+import dev.bluecom.starminer.api.util.GravityDirection;
+import dev.bluecom.starminer.api.util.Vector3dHelper;
 import dev.bluecom.starminer.basics.ModContainer;
+import dev.bluecom.starminer.basics.network.CommonNetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -10,7 +15,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.util.LazyOptional;
@@ -26,15 +30,15 @@ import org.lwjgl.opengl.GL11;
 import java.util.List;
 
 public class CommonForgeEventHandler {
+
 	@SubscribeEvent
 	public void playerLogin(PlayerLoggedInEvent event) {
 		if (!event.getPlayer().level.isClientSide) {
 			CommonNetworkHandler.sendToClient(event.getPlayer().getCapability(GravityProvider.GRAVITY).orElseThrow(() -> new IllegalAccessError("Player should always have capability")).getPacket(), (ServerPlayerEntity) event.getPlayer());
 
-			PlayerEntity player = event.getPlayer();
-			CameraEntity cam = new CameraEntity(player);
-			cam.setPos(player.position().x, player.position().y, player.position().z);
-			player.level.addFreshEntity(cam);
+			//PlayerEntity player = event.getPlayer();
+			//CameraEntity cam = new CameraEntity(player);
+			//player.level.addFreshEntity(cam);
 		}
 	}
 	
@@ -86,7 +90,7 @@ public class CommonForgeEventHandler {
 			double yTranslation = 0;
 			double zTranslation = 0;
 
-			if (timeoutTicks != 0 && effectiveTimeoutTicks > ConfigHandler.transitionAnimationRotationEnd) {
+			if (timeoutTicks != 0 && effectiveTimeoutTicks > CommonConfigHandler.transitionAnimationRotationEnd) {
 				double rotationAngle;
 				if (!cap.hasTransitionAngle()) {
 					double yaw = player.yRot;
@@ -110,7 +114,7 @@ public class CommonForgeEventHandler {
 					rotationAngle = cap.getTransitionAngle();
 				}
 				double numerator = GravityCapability.DEFAULT_TIMEOUT - effectiveTimeoutTicks;
-				double denominator = ConfigHandler.transitionAnimationRotationLength;
+				double denominator = CommonConfigHandler.transitionAnimationRotationLength;
 				double multiplierZeroToOne = numerator / denominator;
 				double multiplierOneToZero = 1 - multiplierZeroToOne;
 				transitionRollAmount = (float)(rotationAngle * multiplierOneToZero);
@@ -181,21 +185,53 @@ public class CommonForgeEventHandler {
 		}
 	}
 
-	@SubscribeEvent
+	//@SubscribeEvent
 	public void cameraSetup4(EntityViewRenderEvent.CameraSetup event) {
 		Minecraft instance = Minecraft.getInstance();
-		//if (instance.getCameraEntity() instanceof PlayerEntity) {
-			//PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
-			//List<CameraEntity> list = instance.level.getEntitiesOfClass(CameraEntity.class, player.getBoundingBox().inflate(2));
-			//System.out.println(list);
-			// bind camera entity
-		//}
+		if (instance.getCameraEntity() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			List<CameraEntity> list = instance.level.getEntitiesOfClass(CameraEntity.class, player.getBoundingBox().inflate(2));
+			instance.cameraEntity = list.get(0);
+		}
 		if (instance.getCameraEntity() instanceof CameraEntity) {
-			System.out.println("it did attach");
-			//CameraEntity camera = (CameraEntity) instance.getCameraEntity();
-			//PlayerEntity player = camera.host;
+			CameraEntity camera = (CameraEntity) instance.getCameraEntity();
+			PlayerEntity player = camera.host;
 			//double pitch = (player.xRotO + (player.xRot - player.xRotO) * event.getRenderPartialTicks()) % 360;
 			//double yaw = (player.yRotO + (player.yRot - player.yRotO) * event.getRenderPartialTicks()) % 360;
+		}
+	}
+
+	//@SubscribeEvent
+	public void cameraSetup5(EntityViewRenderEvent.CameraSetup event) {
+		Minecraft instance = Minecraft.getInstance();
+		if (instance.getCameraEntity() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) instance.getCameraEntity();
+			GravityCapability cap = GravityCapability.getGravityProp(player);
+			GravityDirection dir = cap.getGravityDir();
+			switch (dir) {
+				case UP_TO_DOWN_YN:
+					break;
+				case DOWN_TO_UP_YP:
+					//event.setPitch(event.getPitch()-180);
+					event.setRoll(event.getRoll()-180);
+					break;
+				case WEST_TO_EAST_XP:
+					//event.setPitch(event.getPitch()-90);
+					event.setRoll(event.getRoll()-90);
+					break;
+				case SOUTH_TO_NORTH_ZN:
+					//event.setPitch(event.getPitch()-90);
+					event.setRoll(event.getRoll()-90);
+					break;
+				case NORTH_TO_SOUTH_ZP:
+					//event.setPitch(event.getPitch()-90);
+					event.setRoll(event.getRoll()-90);
+					break;
+				case EAST_TO_WEST_XN:
+					//event.setPitch(event.getPitch()-90);
+					event.setRoll(event.getRoll()-90);
+					break;
+			}
 		}
 	}
 
@@ -214,31 +250,34 @@ public class CommonForgeEventHandler {
 			cap.tick();
 		}
 	}
-	
-	//@SubscribeEvent
+
+	@SubscribeEvent
 	public void renderLivingPre(final RenderLivingEvent.Pre<?, ?> event) {
 		if (event.getEntity() instanceof PlayerEntity) { //temporarily only overwrite player
-			IGravityCapability grav = GravityCapability.getGravityProp(event.getEntity());
-			if (grav.getAttracted()) {
-				MatrixStack matrix = event.getMatrixStack();
-				switch (grav.getGravityDir()) {
-					case DOWN_TO_UP_YP:
-						matrix.mulPose(Vector3f.XP.rotationDegrees(180));
-						break;
-					case EAST_TO_WEST_XN:
-						matrix.mulPose(Vector3f.ZP.rotationDegrees(-90));
-						break;
-					case WEST_TO_EAST_XP:
-						matrix.mulPose(Vector3f.ZP.rotationDegrees(90));
-						break;
-					case NORTH_TO_SOUTH_ZP:
-						matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
-						break;
-					case SOUTH_TO_NORTH_ZN:
-						matrix.mulPose(Vector3f.XP.rotationDegrees(90));
-						break;
-				}
-			}
+			Minecraft instance = Minecraft.getInstance();
+			//if (instance.getCameraEntity() instanceof Camera && instance.options.getCameraType().isFirstPerson()) { event.setCanceled(true); return; }
+
+			//IGravityCapability grav = GravityCapability.getGravityProp(event.getEntity());
+			//if (grav.getAttracted()) {
+			//	MatrixStack matrix = event.getMatrixStack();
+			//	switch (grav.getGravityDir()) {
+			//		case DOWN_TO_UP_YP:
+			//			matrix.mulPose(Vector3f.XP.rotationDegrees(180));
+			//			break;
+			//		case EAST_TO_WEST_XN:
+			//			matrix.mulPose(Vector3f.ZP.rotationDegrees(-90));
+			//			break;
+			//		case WEST_TO_EAST_XP:
+			//			matrix.mulPose(Vector3f.ZP.rotationDegrees(90));
+			//			break;
+			//		case NORTH_TO_SOUTH_ZP:
+			//			matrix.mulPose(Vector3f.XP.rotationDegrees(-90));
+			//			break;
+			//		case SOUTH_TO_NORTH_ZN:
+			//			matrix.mulPose(Vector3f.XP.rotationDegrees(90));
+			//			break;
+			//	}
+			//}
 		}
 	}
 }

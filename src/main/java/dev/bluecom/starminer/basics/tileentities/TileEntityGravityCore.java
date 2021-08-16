@@ -1,10 +1,10 @@
-package dev.bluecom.starminer.basics.tileentity;
+package dev.bluecom.starminer.basics.tileentities;
 
 import dev.bluecom.starminer.api.GravityCapability;
-import dev.bluecom.starminer.api.GravityDirection;
 import dev.bluecom.starminer.api.IAttractableTileEntity;
+import dev.bluecom.starminer.api.util.GravityDirection;
 import dev.bluecom.starminer.basics.common.CommonRegistryHandler;
-import dev.bluecom.starminer.basics.item.ItemGravityController;
+import dev.bluecom.starminer.basics.items.ItemGravityController;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

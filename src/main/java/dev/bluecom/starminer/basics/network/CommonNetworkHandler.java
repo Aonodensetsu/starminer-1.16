@@ -1,4 +1,4 @@
-package dev.bluecom.starminer.basics.common;
+package dev.bluecom.starminer.basics.network;
 
 import dev.bluecom.starminer.basics.ModContainer;
 import net.minecraft.entity.player.ServerPlayerEntity;

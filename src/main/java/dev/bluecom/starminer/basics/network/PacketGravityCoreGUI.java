@@ -1,8 +1,8 @@
-package dev.bluecom.starminer.basics.common;
+package dev.bluecom.starminer.basics.network;
 
 import java.util.function.Supplier;
 
-import dev.bluecom.starminer.basics.tileentity.TileEntityGravityCore;
+import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;

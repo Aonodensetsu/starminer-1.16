@@ -1,9 +1,9 @@
-package dev.bluecom.starminer.basics.common;
+package dev.bluecom.starminer.basics.network;
 
 import java.util.function.Supplier;
-import dev.bluecom.starminer.api.GravityDirection;
 import dev.bluecom.starminer.api.GravityProvider;
 import dev.bluecom.starminer.api.IGravityCapability;
+import dev.bluecom.starminer.api.util.GravityDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;

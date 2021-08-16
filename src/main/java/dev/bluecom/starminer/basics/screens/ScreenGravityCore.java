@@ -1,10 +1,12 @@
-package dev.bluecom.starminer.basics.tileentity;
+package dev.bluecom.starminer.basics.screens;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.bluecom.starminer.basics.ModContainer;
-import dev.bluecom.starminer.basics.common.CommonNetworkHandler;
-import dev.bluecom.starminer.basics.common.PacketGravityCoreGUI;
+import dev.bluecom.starminer.basics.containers.ContainerGravityCore;
+import dev.bluecom.starminer.basics.network.CommonNetworkHandler;
+import dev.bluecom.starminer.basics.network.PacketGravityCoreGUI;
+import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
