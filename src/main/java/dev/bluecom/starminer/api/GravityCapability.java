@@ -6,6 +6,7 @@ import dev.bluecom.starminer.basics.network.PacketGravityCapability;
 import dev.bluecom.starminer.basics.tileentities.TileEntityGravityCore;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -41,7 +42,7 @@ public class GravityCapability implements IGravityCapability {
 		if (this.isAttracted) {
 			if (this.getTicks() % 40 == 0) {
 				if (host instanceof PlayerEntity) {
-					System.out.println("grav update: " + this.getAttracted());
+					System.out.println("grav update: " + this.getGravityDir());
 				}
 				TileEntity entity = host.level.getBlockEntity(new BlockPos(this.attractedPos.getX(), this.attractedPos.getY(), this.attractedPos.getZ()));
 				if (entity instanceof TileEntityGravityCore) {
