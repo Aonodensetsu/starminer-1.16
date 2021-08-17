@@ -522,10 +522,6 @@ public class TileEntityGravityCore extends TileEntity implements ITickableTileEn
 			workFast = false;
 			return;
 		}
-		if (gType == 1) { // why can it not build a cube?
-			workFast = false;
-			return;
-		}
 		if (workStateY < -starRad || workStateY + worldPosition.getY() < 0) {
 			workFast = false;
 			return;

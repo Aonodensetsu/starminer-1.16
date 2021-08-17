@@ -10,6 +10,11 @@ import org.lwjgl.opengl.GL11;
 public enum GravityDirection {
 	UP_TO_DOWN_YN(1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_UP_TO_DOWN_I, GravityConst.MATRIX_ROT_UP_TO_DOWN_D, GravityConst.FORGE_SIDE_ROT_UP_TO_DOWN) {
 		@Override
+		public Vector3d down() {
+			return new Vector3d(0, -1, 0);
+		}
+
+		@Override
 		public GravityDirection turnWayForNormal() {
 			return UP_TO_DOWN_YN;
 		}
@@ -42,6 +47,11 @@ public enum GravityDirection {
 	},
 	DOWN_TO_UP_YP(1.0F, 0.0F, 0.0F, -1.0F, 0.0F, -1.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, -1.0F, 0.0F, GravityConst.MATRIX_ROT_DOWN_TO_UP_I, GravityConst.MATRIX_ROT_DOWN_TO_UP_D, GravityConst.FORGE_SIDE_ROT_DOWN_TO_UP) {
 		@Override
+		public Vector3d down() {
+			return new Vector3d(0, 1, 0);
+		}
+
+		@Override
 		public GravityDirection turnWayForNormal() {
 			return DOWN_TO_UP_YP;
 		}
@@ -73,6 +83,11 @@ public enum GravityDirection {
 		}
 	},
 	EAST_TO_WEST_XN(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.5F, -1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_EAST_TO_WEST_I, GravityConst.MATRIX_ROT_EAST_TO_WEST_D, GravityConst.FORGE_SIDE_ROT_EAST_TO_WEST) {
+		@Override
+		public Vector3d down() {
+			return new Vector3d(-1, 0, 0);
+		}
+
 		@Override
 		public GravityDirection turnWayForNormal() {
 			return WEST_TO_EAST_XP;
@@ -107,6 +122,11 @@ public enum GravityDirection {
 	},
 	WEST_TO_EAST_XP(0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 0.0F, -0.5F, 1.0F, 1.0F, 0.0F, -1.0F, 0.0F, 0.0F, GravityConst.MATRIX_ROT_WEST_TO_EAST_I, GravityConst.MATRIX_ROT_WEST_TO_EAST_D, GravityConst.FORGE_SIDE_ROT_WEST_TO_EAST) {
 		@Override
+		public Vector3d down() {
+			return new Vector3d(1, 0, 0);
+		}
+
+		@Override
 		public GravityDirection turnWayForNormal() {
 			return EAST_TO_WEST_XN;
 		}
@@ -140,6 +160,11 @@ public enum GravityDirection {
 	},
 	NORTH_TO_SOUTH_ZP(1.0F, 0.0F, 0.0F, 0.0F, -1.0F, 0.5F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, -1.0F, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_I, GravityConst.MATRIX_ROT_NORTH_TO_SOUTH_D, GravityConst.FORGE_SIDE_ROT_NORTH_TO_SOUTH) {
 		@Override
+		public Vector3d down() {
+			return new Vector3d(0, 0, 1);
+		}
+
+		@Override
 		public GravityDirection turnWayForNormal() {
 			return SOUTH_TO_NORTH_ZN;
 		}
@@ -172,6 +197,11 @@ public enum GravityDirection {
 		}
 	},
 	SOUTH_TO_NORTH_ZN(1.0F, 0.0F, 0.0F, 0.0F, 1.0F, -0.5F, 0.0F, 0.0F, 1.0F, -1.0F, 0.0F, 0.0F, 1.0F, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_I, GravityConst.MATRIX_ROT_SOUTH_TO_NORTH_D, GravityConst.FORGE_SIDE_ROT_SOUTH_TO_NORTH) {
+		@Override
+		public Vector3d down() {
+			return new Vector3d(0, 0, -1);
+		}
+
 		@Override
 		public GravityDirection turnWayForNormal() {
 			return NORTH_TO_SOUTH_ZP;
@@ -246,6 +276,10 @@ public enum GravityDirection {
 		this.collideCheckExpandY = -this.matrixRotationI[4];
 		this.collideCheckExpandZ = -this.matrixRotationI[5];
 	}
+
+	public abstract Vector3d down();
+
+	public static Vector3d down(GravityDirection g) { return g.down(); }
 
 	public abstract GravityDirection turnWayForNormal();
 

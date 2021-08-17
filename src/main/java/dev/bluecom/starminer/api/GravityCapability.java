@@ -38,8 +38,9 @@ public class GravityCapability implements IGravityCapability {
 	}
 	
 	@Override
-	public void tick() {
+	public void tickServer() {
 		if (this.isAttracted) {
+			this.moveEntity();
 			if (this.getTicks() % 40 == 0) {
 				if (host instanceof PlayerEntity) {
 					System.out.println("grav update: " + this.getGravityDir());
@@ -47,6 +48,7 @@ public class GravityCapability implements IGravityCapability {
 				TileEntity entity = host.level.getBlockEntity(new BlockPos(this.attractedPos.getX(), this.attractedPos.getY(), this.attractedPos.getZ()));
 				if (entity instanceof TileEntityGravityCore) {
 					TileEntityGravityCore tile = (TileEntityGravityCore) entity;
+					if (!tile.inGravityRange(host)) { this.loseAttractedBy(); }
 					this.setGravityDir(tile.getCurrentGravity(host));
 				}
 			}
@@ -59,7 +61,23 @@ public class GravityCapability implements IGravityCapability {
 		}
 		this.updateClients();
 	}
-	
+
+	@Override
+	public void tickClient() {
+		if (this.host instanceof PlayerEntity) {
+			if (this.isAttracted) { // move player
+				host.setDeltaMovement(host.getDeltaMovement().add(0, 0.08, 0));
+				host.setDeltaMovement(host.getDeltaMovement().add(this.gravity.down().scale(0.08)));
+			}
+		}
+	}
+
+	private void moveEntity() {
+		if (this.host instanceof PlayerEntity) return;
+		host.setDeltaMovement(host.getDeltaMovement().add(0, 0.08, 0));
+		host.setDeltaMovement(host.getDeltaMovement().add(this.gravity.down().scale(0.08)));
+	}
+
 	@Override
 	public int getTicks() {
 		return this.ticksLeft;

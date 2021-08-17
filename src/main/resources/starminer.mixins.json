@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "package": "dev.bluecom.starminer.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "starminer.refmap.json",
+  "mixins": [],
+  "minVersion": "0.8"
+}

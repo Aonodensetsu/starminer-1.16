@@ -17,7 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -244,10 +243,11 @@ public class CommonForgeEventHandler {
 
 	@SubscribeEvent
 	public void tickCapabilityEntity(final LivingUpdateEvent event) {
+		IGravityCapability cap = GravityCapability.getGravityProp(event.getEntity());
 		if (!event.getEntityLiving().level.isClientSide) {
-			LazyOptional<IGravityCapability> gravity = event.getEntityLiving().getCapability(GravityProvider.GRAVITY);
-			IGravityCapability cap = gravity.orElseThrow(() -> new IllegalAccessError("This should always exist."));
-			cap.tick();
+			cap.tickServer();
+		} else {
+			cap.tickClient();
 		}
 	}
 

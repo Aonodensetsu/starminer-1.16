@@ -7,7 +7,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import org.jetbrains.annotations.NotNull;
 
 public interface IGravityCapability {
-	void tick();
+	void tickServer();
+	void tickClient();
 	int getTicks();
 	void setTicks(int ticks);
 	void changeTicks(int ticks);
