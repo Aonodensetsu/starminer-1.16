@@ -1,0 +1,15 @@
+[
+{
+  "modid": "modJ_StarMiner",
+  "name": "Starminer Mod",
+  "description": "Terraform your own tiny stars!! Have fun!!",
+  "version": "0.9.9",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ARUBE(oANCIENTREDo)"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

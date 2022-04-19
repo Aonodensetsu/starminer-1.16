@@ -1,2 +1,4 @@
 # starminer-1.16
-1.16 version of the rewrite.
+A try at rewriting StarMiner for 1.16.5.
+
+On hold.

@@ -1,0 +1,95 @@
+tile.gravitycore.name=GravityCore
+tile.innercore.name=InnerStarCore
+tile.outercore.name=OuterStarCore
+tile.manbazooka.name=ManBazooka
+tile.navigator.name=Navigator
+tile.gravitywall.name=GravityWall
+tile.chestgravitized.name=Chest(+G)
+tile.blockrotator.name=FakeRotator
+tile.blockrotator_alpha.name=FakeRotator(Alpha)
+
+tile.dirtgrassex.name=StarDirt
+tile.cropgravitized.name=Crops(+G)
+tile.carrotgravitized.name=Carrots(+G)
+tile.potatogravitized.name=Potatos(+G)
+
+tile.saplinggravitized.oak.name=Oak Sapling(+G)
+tile.saplinggravitized.spruce.name=Spruce Sapling(+G)
+tile.saplinggravitized.birch.name=Birch Sapling(+G)
+tile.saplinggravitized.jungle.name=Jungle Sapling(+G)
+tile.saplinggravitized.acacia.name=Acacia Sapling(+G)
+tile.saplinggravitized.roofed_oak.name=Dark Oak Sapling(+G)
+
+tile.yflowergravitized.dandelion.name=Dandelion(+G)
+tile.rflowergravitized.poppy.name=Poppy(+G)
+tile.rflowergravitized.allium.name=Allium(+G)
+tile.rflowergravitized.blueOrchid.name=Blue Orchid(+G)
+tile.rflowergravitized.houstonia.name=Azure Bluet(+G)
+tile.rflowergravitized.oxeyeDaisy.name=Oxeye Daisy(+G)
+tile.rflowergravitized.tulipRed.name=Red Tulip(+G)
+tile.rflowergravitized.tulipOrange.name=Orange Tulip(+G)
+tile.rflowergravitized.tulipPink.name=Pink Tulip(+G)
+tile.rflowergravitized.tulipWhite.name=White Tulip(+G)
+
+tile.tallgrassgravitized.shrub.name=Shrub(+G)
+tile.tallgrassgravitized.grass.name=Grass(+G)
+tile.tallgrassgravitized.fern.name=Fern(+G)
+
+item.gravitycontroller.name=GravityController
+item.starcontroller.name=StarController
+item.solarwindFan.name=SolarWindFan
+item.starbed.name=StarBed
+item.starcore_dust.name=Stardust
+item.g_rapplegun.name=G-rappleGun
+item.g_rapplegun.keyguide=Press %1$s to release
+item.g_arrow.name=G-Arrow
+item.g_hook.name=G-Arrow With Rope
+item.seedsgravitized.name=Seeds(+G)
+item.carrotgravitizeditem.name=Carrot(+G)
+item.potatogravitizeditem.name=Potato(+G)
+
+item.blockgun.short.name=Floating Block Gun(Short)
+item.blockgun.normal.name=Floating Block Gun(Normal)
+item.blockgun.long.name=Floating Block Gun(Long)
+item.blockgun.spread.name=Floating Block Gun(Spread)
+
+item.saplinggravitized.oak.name=Oak Sapling(+G)
+item.saplinggravitized.spruce.name=Spruce Sapling(+G)
+item.saplinggravitized.birch.name=Birch Sapling(+G)
+item.saplinggravitized.jungle.name=Jungle Sapling(+G)
+item.saplinggravitized.acacia.name=Acacia Sapling(+G)
+item.saplinggravitized.roofed_oak.name=Dark Oak Sapling(+G)
+
+item.yflowergravitized.dandelion.name=Dandelion(+G)
+item.rflowergravitized.poppy.name=Poppy(+G)
+item.rflowergravitized.allium.name=Allium(+G)
+item.rflowergravitized.blueOrchid.name=Blue Orchid(+G)
+item.rflowergravitized.houstonia.name=Azure Bluet(+G)
+item.rflowergravitized.oxeyeDaisy.name=Oxeye Daisy(+G)
+item.rflowergravitized.tulipRed.name=Red Tulip(+G)
+item.rflowergravitized.tulipOrange.name=Orange Tulip(+G)
+item.rflowergravitized.tulipPink.name=Pink Tulip(+G)
+item.rflowergravitized.tulipWhite.name=White Tulip(+G)
+
+item.tallgrassgravitized.shrub.name=Shrub(+G)
+item.tallgrassgravitized.grass.name=Grass(+G)
+item.tallgrassgravitized.fern.name=Fern(+G)
+
+entity.StarSquid.name=StarSquid
+entity.GProjectile.name=GArrow
+
+itemGroup.StarMiner=StarMiner
+
+starInfo.inventory=TerraformingMaterials
+starInfo.titleInf=Star Info
+starInfo.titleGrange=G-Rad
+starInfo.titleSSize=StarRad
+starInfo.gRangeInfo=>>> %d <<<
+starInfo.gSizeInfo=>>> %d <<<
+starInfo.type.sph=sph
+starInfo.type.cub=cub
+starInfo.type.xcyl=xcyl
+starInfo.type.ycyl=ycyl
+starInfo.type.zcyl=zcyl
+starInfo.sconInfoON=coord[x:%d,y:%d,z:%d]
+starInfo.sconInfoOFF=not active
